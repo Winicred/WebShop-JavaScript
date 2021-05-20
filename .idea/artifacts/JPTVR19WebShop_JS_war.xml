@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" name="JPTVR19WebShop_JS:war">
+    <output-path>$PROJECT_DIR$/out/artifacts/JPTVR19WebShop_JS_war</output-path>
+    <root id="archive" name="JPTVR19WebShop_JS_war.war">
+      <element id="artifact" artifact-name="JPTVR19WebShop_JS:war exploded" />
+    </root>
+  </artifact>
+</component>
