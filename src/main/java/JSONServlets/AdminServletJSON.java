@@ -49,18 +49,18 @@ public class AdminServletJSON extends HttpServlet {
                 response.setContentType("application/json");
                 List<User> listUsers = userFacade.findAll();
                 List<Role> listUserRoles = null;
+
                 JsonArrayBuilder jab = Json.createArrayBuilder();
                 for (User user : listUsers) {
                     String role = userRolesFacade.getTopRoleForUser(user);
                     jab.add(Json.createObjectBuilder()
                             .add("user", new JSONUserBuilder().createJSONUser(user))
-                            .add("role", role)
-                            .build()
+                            .add("role", role).build()
                     );
                 }
 
                 json = job.add("requestStatus", "true")
-                        .add("info", "Список пользователей: ")
+                        .add("info", "Список пользователей")
                         .add("listUsers", jab.build())
                         .build()
                         .toString();

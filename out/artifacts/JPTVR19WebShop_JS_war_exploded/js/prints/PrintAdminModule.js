@@ -1,4 +1,4 @@
-import {adminModule} from "../AdminModule.js";
+import {userModule} from "../UserModule.js";
 
 class PrintAdminModule {
     async printListUsers() {
@@ -19,14 +19,15 @@ class PrintAdminModule {
 
         // <strong>${usersCount}</strong>
 
-        const users = await adminModule.loadListUsers();
-
-        document.getElementById("content").innerHTML = `
-            <div class="p-5 w-75 mx-auto" style="background: #FFF; border-radius: 15px">
-        <h1 class="text-center">Список покупателей</h1>
-        <p class="text-center my-3" style="font-size: 18px">Всего зарегистрировано пользователей:<strong>3</strong><p>
-        <table class="table table-striped table-hover mx-auto mt-5" id="tableListBuyers">
-            <thead class="table table-striped text-center">
+        let result = await userModule.loadListUsers();
+        const count = result.listUsers.length;
+        let content = document.getElementById('content');
+        content.innerHTML = '';
+        content.insertAdjacentHTML('afterBegin',
+            `<h3 class="w-100 my-5 text-center">Список читателей</h3>
+        <p class="">Всего пользователей: ${count}<p>
+        <table id="tableListBuyers" class="table table-striped">
+            <thead>
             <th>№</th>
             <th>Имя и фамилия</th>
             <th>E-mail</th>
@@ -37,39 +38,79 @@ class PrintAdminModule {
             <th>Статус</th>
             <th></th>
             </thead>
-            <tbody class="text-center table-striped" id="tbody">
-                <tr>
-                    <td>${1}</td>
-                    <td>
-                        <strong>${users.listUsers.user.buyer.name} ${
-                users.listUsers.user.buyer.lastName
-            }</strong>
-                        <strong id="userAttribute"><i class="text-muted">/i></strong> 
-                    </td>
-                    <td>${users.listUsers.user.buyer.email}</td>
-                    <td>
-                        <p id="buyerMoneyControl" class="text-muted"></p>
-                    </td>
-                    <td>${users.listUsers.user.login}</td>
-                    <td>
-                        <div class="d-flex flex-column">
-                            <span>${users.listUsers.role}</span>
-                                <small style="margin-top: -3px">
-                                <a href="#" onclick="function() {adminModule.changeUserRole("users.listUsers.id")}" class="badge bg-primary mx-auto">Изменить</a>
-                            </small>
-                        </div>
-                    </td>
-                    <td><em><strong>Да</strong></em></td>
-                    <th>
-                        <div id="userStatus"></div>
-                    </th>
-                    <th>
-                        <div id="UserProfileControl"></div>
-                    </th>
-                </tr>
+            <tbody>
             </tbody>
-        </table>
-    </div>`
+        </table>`);
+
+        let tbody = document.getElementById("tableListBuyers").getElementsByTagName("tbody")[0];
+        let index = document.getElementById("index");
+        let name = document.getElementById("name");
+        let email = document.getElementById("email");
+        let balance = document.getElementById("balance");
+        let login = document.getElementById("login");
+        let role = document.getElementById("role");
+        let activity = document.getElementById("activity");
+        let status = document.getElementById("status");
+        let button = document.getElementById("button");
+
+        let i = 1;
+        for (let users of result.listUsers) {
+            let tr = document.createElement("tr");
+            let td = document.createElement("td");
+            // ID пользователя
+            td.appendChild(document.createTextNode(i++));
+            tr.appendChild(td);
+
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode(users.role));
+            tr.appendChild(td)
+            td = document.createElement("td")
+
+            // let userId = null;
+            // for (let userField in users.user) {
+            //     let td = document.createElement("td");
+            //
+            //     if (typeof users.user[userField] === "object") {
+            //         for (let buyerField in users.user[userField]) {
+            //             td = document.createElement("td");
+            //             if (buyerField === "money") {
+            //                 td.appendChild(document.createTextNode(users.user[userField][buyerField]));
+            //                 tr.appendChild(td);
+            //             } else {
+            //                 td.appendChild(document.createTextNode(users.user[userField][buyerField]));
+            //                 tr.appendChild(td);
+            //             }
+            //         }
+            //     }
+            // }
+
+            // Роль пользователя
+            td = document.createElement("td");
+            td.appendChild(document.createTextNode(users.role));
+            tr.appendChild(td);
+            td = document.createElement("td");
+
+            // Активность пользователя
+            td.appendChild(document.createTextNode("Yes"));
+            tr.appendChild(td);
+            td = document.createElement("td");
+
+            // Изменение пользователя
+            let span = document.createElement("span");
+            span.classList.add("btn");
+            span.classList.add("text-white");
+            span.classList.add("bg-primary");
+            span.classList.add("p-2");
+            span.appendChild(document.createTextNode("Изменить"));
+
+            span.onclick = function () {
+                userModule.changeUser(userId)
+            };
+
+            td.appendChild(span);
+            tr.appendChild(td);
+            tbody.appendChild(tr);
+        }
     }
 
     printAdminPanel() {

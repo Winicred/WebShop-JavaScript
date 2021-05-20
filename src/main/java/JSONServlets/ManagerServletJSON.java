@@ -7,6 +7,7 @@ import entity.Cover;
 import entity.Product;
 import jakarta.ejb.EJB;
 import jakarta.json.Json;
+import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonObjectBuilder;
 import jakarta.servlet.ServletException;
@@ -36,6 +37,8 @@ import java.util.stream.Collectors;
 @WebServlet(name = "ManagerServletJSON", urlPatterns = {
         "/createProductJSON",
         "/createCategoryJSON",
+        "/removeCategoryJSON",
+        "/listCategoriesJSON",
 })
 public class ManagerServletJSON extends HttpServlet {
     public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
@@ -52,7 +55,6 @@ public class ManagerServletJSON extends HttpServlet {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8");
         JsonObjectBuilder job = Json.createObjectBuilder();
-        JsonObject jsonObject = null;
 
         String uploadFolder = ManagerServletJSON.pathToFile.getString("directory");
         String json = null;
@@ -167,28 +169,41 @@ public class ManagerServletJSON extends HttpServlet {
                 break;
 
             case "/createCategoryJSON":
-                String listCategories = categoryFacade.findAll().toString();
+                String categoryName = request.getParameter("categoryName");
 
-                String categoryName = jsonObject.getString("categoryName", "");
+                category = new Category(categoryName);
+                categoryFacade.create(category);
+                JSONCategoryBuilder jsonCategoryBuilder = new JSONCategoryBuilder();
+                JsonObject jsonCategory = jsonCategoryBuilder.createJSONCategory(category);
+                json = job.add("requestStatus", "true")
+                        .add("info", "Категория " + '"' + categoryName + '"' + " добавлена.")
+                        .add("category", jsonCategory.toString())
+                        .build()
+                        .toString();
+                break;
 
-                if (listCategories.contains(categoryName)) {
-                    json = job.add("requestStatus", "false")
-                            .add("info", "Категория " + categoryName + " уже есть.")
-                            .build()
-                            .toString();
-                } else {
-                    category = new Category(categoryName);
-                    categoryFacade.create(category);
-                    JSONCategoryBuilder jsonCategoryBuilder = new JSONCategoryBuilder();
-                    JsonObject jsonCategory = jsonCategoryBuilder.createJSONCategory(category);
-                    json = job.add("requestStatus", "true")
-                            .add("info", "Категория " + '"' + categoryName + '"' + " добавлена.")
-                            .add("category", jsonCategory.toString())
-                            .build()
-                            .toString();
-                }
+            case "/removeCategoryJSON":
+                String deletedCategoryId = request.getParameter("categoryId");
 
-                request.setAttribute("listCategories", listCategories);
+                Category deletedCategory = categoryFacade.find(Long.parseLong(deletedCategoryId));
+                String deletedCategoryName = deletedCategory.getCategoryName();
+                categoryFacade.remove(deletedCategory);
+
+                json = job.add("requestStatus", "true")
+                        .add("info", "Категория " + '"' + deletedCategoryName + '"' + " удалена.")
+                        .build()
+                        .toString();
+                break;
+
+            case "/listCategoriesJSON":
+                List<Category> listCategories = categoryFacade.findAll();
+
+                JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
+                listCategories.forEach(categoryInList -> {
+                    jsonArrayBuilder.add(new JSONCategoryBuilder().createJSONCategory(categoryInList));
+                });
+                json = jsonArrayBuilder.build().toString();
+
                 break;
         }
 

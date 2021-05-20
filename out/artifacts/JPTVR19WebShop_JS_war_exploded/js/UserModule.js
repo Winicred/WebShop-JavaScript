@@ -36,6 +36,20 @@ class UserModule {
             console.log("Ошибка получения данных.");
         }
     }
+
+    async loadListUsers() {
+        let response = await fetch('listUsersJSON', {
+            method: 'GET',
+        })
+        if (response.ok) {
+            let result = await response.json();
+            console.log('listUsers: ' + result.listUsers.length);
+            return result;
+        } else {
+            document.getElementById('info').innerHTML = "Ошибка сервера";
+            return null;
+        }
+    }
 }
 
 let userModule = new UserModule();

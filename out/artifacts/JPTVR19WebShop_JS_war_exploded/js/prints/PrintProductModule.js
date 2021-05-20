@@ -2,7 +2,6 @@ import {productModule} from "../ProductModule.js";
 
 class PrintProductModule {
     async printAddProduct() {
-
         document.getElementById("content").innerHTML =
             `<form id="addProductForm" method="POST" enctype="multipart/form-data">
                 <p class="fw-bold text-muted text-center">Общие характеристики</p>
@@ -10,7 +9,7 @@ class PrintProductModule {
                 <div class="input-group flex-nowrap w-25 my-3 mx-auto">
                     <span class="input-group-text">Категория</span>
                     <select class="form-select" name="categoryId" id="categoryId" required>
-                            <option value="1">Список категорий</option>
+                            <option disabled>Список категорий:</option>
                     </select>
                     <a class="btn btn-outline-primary" href="#addCategory" id="addCategory">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-clipboard-plus" viewBox="0 0 16 16">
@@ -440,20 +439,34 @@ class PrintProductModule {
                 </div>
             </form>`;
 
-        // document.getElementById("addCategory").addEventListener("click", printProductModule.printAddCategory);
+        productModule.addProductInputEnding();
+
+        const listCategories = await productModule.loadListCategories();
+        const categorySelect = document.getElementById("categoryId")
+
+        for (let i = 0; i < listCategories.length; i++) {
+            let category = listCategories[i];
+            let element = document.createElement("option");
+            element.textContent = category.categoryName;
+            element.value = category.id;
+            categorySelect.appendChild(element)
+        }
+
+        document.getElementById("addCategory").addEventListener("click", printProductModule.printAddCategory);
         document.getElementById("addProductForm").onsubmit = function (e) {
             e.preventDefault();
             productModule.addProduct();
         }
     }
 
-    printAddCategory() {
+    async printAddCategory() {
+        document.getElementById("info").innerHTML = "";
         document.getElementById(
             "content"
         ).innerHTML = `
         <form id="addCategoryForm" method="POST" enctype="multipart/form-data">
             <div class="input-group flex-nowrap w-25 my-3 mx-auto">
-                <select disabled multiple class="mt-2 mx-auto w-50 form-select">
+                <select disabled multiple class="mt-2 mx-auto w-50 form-select" id="categoryList">
                     <option style="font-weight: bold">Список категорий: </option>
                 </select>
             </div>
@@ -470,6 +483,18 @@ class PrintProductModule {
             </div>
         </form>`;
 
+        const listCategories = await productModule.loadListCategories();
+        const categorySelect = document.getElementById("categoryList")
+
+        for (let i = 0; i < listCategories.length; i++) {
+            let category = listCategories[i];
+            let element = document.createElement("option");
+            element.textContent = category.id + ". " + category.categoryName;
+            element.value = category.id;
+            categorySelect.appendChild(element)
+            console.log(category.id)
+        }
+
         document.getElementById("addCategoryForm").onsubmit = function (e) {
             e.preventDefault();
             productModule.addCategory();
@@ -479,7 +504,8 @@ class PrintProductModule {
             .addEventListener("click", printProductModule.printRemoveCategory);
     }
 
-    printRemoveCategory() {
+    async printRemoveCategory() {
+        document.getElementById("info").innerHTML = "";
         document.getElementById(
             "content"
         ).innerHTML =
@@ -487,8 +513,7 @@ class PrintProductModule {
         <form id="removeCategoryForm" method="POST" enctype="multipart/form-data">
             <div class="input-group flex-nowrap w-25 my-3 mx-auto">
                 <span class="input-group-text">Выберите категорию</span>
-                <select class="form-select" name="categoryId" required>
-                        <option>фвыфв</option>
+                <select class="form-select" name="categoryId" id="deleteCategorySelect" required>
                 </select>
             </div>
     
@@ -498,6 +523,19 @@ class PrintProductModule {
                 </div>
             </div>
         </form>`;
+
+        const listCategories = await productModule.loadListCategories();
+        const categorySelect = document.getElementById("deleteCategorySelect")
+
+        for (let i = 0; i < listCategories.length; i++) {
+            let category = listCategories[i];
+            let element = document.createElement("option");
+            element.textContent = category.categoryName;
+            element.value = category.id;
+            element.id = "categoryId"
+            categorySelect.appendChild(element)
+        }
+
         document.getElementById("removeCategoryForm").onsubmit = function (e) {
             e.preventDefault();
             productModule.removeCategory();
@@ -526,7 +564,7 @@ class PrintProductModule {
             cart.insertAdjacentHTML("beforeEnd",
                 `<div class="card-body">
                            <h5 class="card-title m-0">${product.brand} ${product.series}</h5>
-                           <p class="card-text m-0">${product.price / 100}€</p>
+                           <p class="card-text m-0">${product.price}€</p>
                            <p class="d-inline">
                                <a href="readBook?productId=${product.id}" class="link text-nowrap">Читать</a>
                                <a href="addToBasket?productId=${product.id}" class="link text-nowrap">В корзину</a>
