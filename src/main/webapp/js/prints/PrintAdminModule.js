@@ -1,4 +1,5 @@
 import {userModule} from "../UserModule.js";
+import {adminModule} from "../AdminModule";
 
 class PrintAdminModule {
     async printListUsers() {
@@ -43,46 +44,32 @@ class PrintAdminModule {
         </table>`);
 
         let tbody = document.getElementById("tableListBuyers").getElementsByTagName("tbody")[0];
-        let index = document.getElementById("index");
-        let name = document.getElementById("name");
-        let email = document.getElementById("email");
-        let balance = document.getElementById("balance");
-        let login = document.getElementById("login");
-        let role = document.getElementById("role");
-        let activity = document.getElementById("activity");
-        let status = document.getElementById("status");
-        let button = document.getElementById("button");
 
         let i = 1;
         for (let users of result.listUsers) {
             let tr = document.createElement("tr");
             let td = document.createElement("td");
-            // ID пользователя
-            td.appendChild(document.createTextNode(i++));
-            tr.appendChild(td);
-
-            td = document.createElement("td");
-            td.appendChild(document.createTextNode(users.));
-            tr.appendChild(td)
-            td = document.createElement("td")
-
-            // let userId = null;
-            // for (let userField in users.user) {
-            //     let td = document.createElement("td");
-            //
-            //     if (typeof users.user[userField] === "object") {
-            //         for (let buyerField in users.user[userField]) {
-            //             td = document.createElement("td");
-            //             if (buyerField === "money") {
-            //                 td.appendChild(document.createTextNode(users.user[userField][buyerField]));
-            //                 tr.appendChild(td);
-            //             } else {
-            //                 td.appendChild(document.createTextNode(users.user[userField][buyerField]));
-            //                 tr.appendChild(td);
-            //             }
-            //         }
-            //     }
-            // }
+            let userId = null;
+            for (let userField in users.user) {
+                let td = document.createElement("td");
+                if (userField === "id") userId = users.user[userField];
+                if (typeof users.user[userField] === 'object') {
+                    for (let buyerField in users.user[userField]) {
+                        if (buyerField === "id") continue;
+                        td = document.createElement("td");
+                        if (buyerField === "money") {
+                            td.appendChild(document.createTextNode(users.user[userField][buyerField] / 100));
+                            tr.appendChild(td);
+                        } else {
+                            td.appendChild(document.createTextNode(users.user[userField][buyerField]));
+                            tr.appendChild(td);
+                        }
+                    }
+                } else {
+                    td.appendChild(document.createTextNode(users.user[userField]));
+                    tr.appendChild(td);
+                }
+            }
 
             // Роль пользователя
             td = document.createElement("td");
@@ -113,8 +100,48 @@ class PrintAdminModule {
         }
     }
 
-    printAdminPanel() {
+    async printAdminPanel() {
 
+        document.getElementById("content").innerHTML =
+            `<h3 class="w-100 m-2 text-center mt-5">Панель администратора</h3>
+
+            <form id="setRole" method="POST" class="mt-5">
+                <div class="row mx-auto w-50 mt-5">
+                    <div class="col w-25 mx-auto">
+                        <select id="userId" class="mt-2 mx-auto w-50 form-select">
+                        
+                        </select>
+                    </div>
+                </div>
+                <div class="row mx-auto w-50">
+                    <div class="col w-25 mx-auto">
+                        <select id="roleId" class="mt-2 mx-auto w-50 form-select">
+                            <option value="">Выберите роль</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col m-2 mt-5 text-center">
+                        <input type="submit" class="btn btn-primary" id="setRoleButton" value="Изменить роль пользователю">
+                    </div>
+                </div>
+            </form>`;
+
+        document.getElementById("setRole").addEventListener("submit", adminModule.setRoleToUser);
+
+        const listUsersWithRoles = await adminModule.getListUsersWithRole();
+        const selectUserIdOptions = document.getElementById("userId");
+
+        for (let user of listUsersWithRoles) {
+            selectUserIdOptions.add(new Option("Логин: " + user.user.login + ", роль: " + user.role + ", ID: " + user.id));
+        }
+
+        const listRoles = await adminModule.getListRoles();
+        const selectRoleIdOptions = document.getElementById("roleId");
+
+        for (let role of listRoles) {
+            selectRoleIdOptions.add(new Option("Роль: " + role.roleName + ", ID: " + role.id))
+        }
     }
 }
 

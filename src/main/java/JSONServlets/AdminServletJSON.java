@@ -4,10 +4,7 @@ import JSONBuilder.JSONUserBuilder;
 import entity.Role;
 import entity.User;
 import jakarta.ejb.EJB;
-import jakarta.json.Json;
-import jakarta.json.JsonArrayBuilder;
-import jakarta.json.JsonObject;
-import jakarta.json.JsonObjectBuilder;
+import jakarta.json.*;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.MultipartConfig;
 import jakarta.servlet.annotation.WebServlet;
@@ -16,6 +13,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import session.ProductFacade;
+import session.RoleFacade;
 import session.UserFacade;
 import session.UserRolesFacade;
 
@@ -26,6 +24,10 @@ import java.util.List;
 @MultipartConfig()
 @WebServlet(name = "AdminServletJSON", urlPatterns = {
         "/listUsersJSON",
+        "/getUserJSON",
+        "/listUsersWithRoleJSON",
+        "/listRolesJSON",
+        "/setRoleToUserJSON"
 })
 public class AdminServletJSON extends HttpServlet {
     @EJB
@@ -34,6 +36,8 @@ public class AdminServletJSON extends HttpServlet {
     private UserRolesFacade userRolesFacade;
     @EJB
     private ProductFacade productFacade;
+    @EJB
+    private RoleFacade roleFacade;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -64,6 +68,43 @@ public class AdminServletJSON extends HttpServlet {
                         .add("listUsers", jab.build())
                         .build()
                         .toString();
+                break;
+
+            case "/listUsersWithRoleJSON":
+                listUsers = userFacade.findAll();
+                jab = Json.createArrayBuilder();
+                job = Json.createObjectBuilder();
+                for (User u : listUsers) {
+                    String role = userRolesFacade.getTopRoleForUser(u);
+                    job.add("user", new JSONUserBuilder().createJSONUser(u));
+                    job.add("role", role);
+                    jab.add(job.build());
+                }
+                json = jab.build().toString();
+                break;
+
+            case "/listRolesJson":
+                List<Role> listRoles = roleFacade.findAll();
+                jab = Json.createArrayBuilder();
+                job = Json.createObjectBuilder();
+
+                for (Role r : listRoles) {
+                    job.add("id", r.getId())
+                            .add("roleName", r.getRoleName());
+                    jab.add(job.build());
+                }
+                json = jab.build().toString();
+
+                break;
+
+            case "/setRoleToUserJson":
+                JsonReader jsonReader = Json.createReader(request.getInputStream());
+                jsonObject = jsonReader.readObject();
+                long LuserId = jsonObject.getInt("userId");
+                long LroleId = jsonObject.getInt("roleId");
+                Role role = roleFacade.find(LroleId);
+                userRolesFacade.setRole(role.getRoleName(), userFacade.find(LuserId));
+                json = "{\"info\":\"Ok\"}";
                 break;
         }
 

@@ -25,6 +25,51 @@ class AdminModule {
     confirmUser(userId) {
         console.log("userId = " + userId);
     }
+
+    editUser() {
+
+    }
+
+    setRoleToUser() {
+        const userId = document.getElementById("userId").value;
+        const roleId = document.getElementById("roleId").value;
+
+        const data = {
+            "userId": userId,
+            "roleId": roleId
+        }
+
+        let response = fetch("setRoleToUserJSON", {
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+    }
+
+    async getListUsersWithRole() {
+        let response = await fetch("listUsersWithRoleJSON", {
+            method: "GET"
+        });
+
+        if (response.ok) {
+            return await response.json()
+        } else {
+            console.log("Ошибка сервера.");
+            return null;
+        }
+    }
+
+    async getListRoles() {
+        let response = await fetch("listRolesJSON", {
+            method: "GET"
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.log("Ошибка сервера.");
+            return null;
+        }
+    }
 }
 
 let adminModule = new AdminModule();
