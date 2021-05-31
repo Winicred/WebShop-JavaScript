@@ -1,5 +1,5 @@
 import {userModule} from "../UserModule.js";
-import {adminModule} from "../AdminModule";
+import {adminModule} from "../AdminModule.js";
 
 class PrintAdminModule {
     async printListUsers() {

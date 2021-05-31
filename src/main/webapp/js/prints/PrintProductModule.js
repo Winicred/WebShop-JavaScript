@@ -8,7 +8,7 @@ class PrintProductModule {
                 
                 <div class="input-group flex-nowrap w-25 my-3 mx-auto">
                     <span class="input-group-text">Категория</span>
-                    <select class="form-select" name="categoryId" id="categoryId" required>
+                    <select class="form-select disabled" name="categoryId" id="categoryId" required>
                             <option disabled>Список категорий:</option>
                     </select>
                     <a class="btn btn-outline-primary" href="#addCategory" id="addCategory">
@@ -444,12 +444,15 @@ class PrintProductModule {
         const listCategories = await productModule.loadListCategories();
         const categorySelect = document.getElementById("categoryId")
 
+        console.log(listCategories.length)
+
         for (let i = 0; i < listCategories.length; i++) {
             let category = listCategories[i];
-            let element = document.createElement("option");
+            let element = document.createElement("option")
+
             element.textContent = category.categoryName;
             element.value = category.id;
-            categorySelect.appendChild(element)
+            categorySelect.appendChild(element);
         }
 
         document.getElementById("addCategory").addEventListener("click", printProductModule.printAddCategory);
@@ -492,7 +495,6 @@ class PrintProductModule {
             element.textContent = category.id + ". " + category.categoryName;
             element.value = category.id;
             categorySelect.appendChild(element)
-            console.log(category.id)
         }
 
         document.getElementById("addCategoryForm").onsubmit = function (e) {
@@ -546,23 +548,25 @@ class PrintProductModule {
         const listProducts = await productModule.loadListProducts();
         let content = document.getElementById("content");
         content.innerHTML = '<h3 class="w-100 my-5 text-center">Список товаров</h3>';
-        let divForCarts = document.createElement("div");
-        divForCarts.classList.add("w-100");
-        divForCarts.classList.add("d-flex")
-        divForCarts.classList.add("justify-content-center");
-        for (let product of listProducts) {
-            let cart = document.createElement("div");
-            cart.classList.add("card");
-            cart.classList.add("m-2");
-            cart.style.cssText = `max-width: 12rem; max-height: 25rem; border:0`;
-            cart.innerHTML = '<p class="card-text text-danger w-100 d-flex justify-content-center">&nbsp;</p>';
-            let img = document.createElement("img");
-            img.classList.add("card-img-top");
-            img.style.cssText = `max-width: 12rem; max-height: 15rem`;
-            img.setAttribute("src", "insertFile/${product.cover.path}");
-            cart.insertAdjacentElement("beforeEnd", img);
-            cart.insertAdjacentHTML("beforeEnd",
-                `<div class="card-body">
+        
+        if (listProducts.length !== 0) {
+            let divForCarts = document.createElement("div");
+            divForCarts.classList.add("w-100");
+            divForCarts.classList.add("d-flex")
+            divForCarts.classList.add("justify-content-center");
+            for (let product of listProducts) {
+                let cart = document.createElement("div");
+                cart.classList.add("card");
+                cart.classList.add("m-2");
+                cart.style.cssText = `max-width: 12rem; max-height: 25rem; border:0`;
+                cart.innerHTML = '<p class="card-text text-danger w-100 d-flex justify-content-center">&nbsp;</p>';
+                let img = document.createElement("img");
+                img.classList.add("card-img-top");
+                img.style.cssText = `max-width: 12rem; max-height: 15rem`;
+                img.setAttribute("src", "insertCover/${product.cover.path}");
+                cart.insertAdjacentElement("beforeEnd", img);
+                cart.insertAdjacentHTML("beforeEnd",
+                    `<div class="card-body">
                            <h5 class="card-title m-0">${product.brand} ${product.series}</h5>
                            <p class="card-text m-0">${product.price}€</p>
                            <p class="d-inline">
@@ -570,11 +574,32 @@ class PrintProductModule {
                                <a href="addToBasket?productId=${product.id}" class="link text-nowrap">В корзину</a>
                            </p>
                       </div>`
-            );
-            divForCarts.insertAdjacentElement("beforeEnd", cart);
-        }
+                );
+                divForCarts.insertAdjacentElement("beforeEnd", cart);
 
-        content.insertAdjacentElement("beforeEnd", divForCarts);
+            }
+
+            content.insertAdjacentElement("beforeEnd", divForCarts);
+        } else {
+            content.innerHTML =
+                `
+            <h3 class="w-100 my-5 text-center">Список товаров</h3>
+
+            <div class="d-flex h-100 w-50 mx-auto my-auto main_cart shadow" style="background-color: #FFFFFF">
+                <div class="d-flex flex-column mx-auto my-auto">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" fill="currentColor"
+                         class="bi bi-bookmark-x-fill" viewBox="0 0 16 16"
+                         style="margin: 0 auto; margin-bottom: 1rem; margin-top: 5rem">
+                        <path fill-rule="evenodd"
+                              d="M2 15.5V2a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v13.5a.5.5 0 0 1-.74.439L8 13.069l-5.26 2.87A.5.5 0 0 1 2 15.5zM6.854 5.146a.5.5 0 1 0-.708.708L7.293 7 6.146 8.146a.5.5 0 1 0 .708.708L8 7.707l1.146 1.147a.5.5 0 1 0 .708-.708L8.707 7l1.147-1.146a.5.5 0 0 0-.708-.708L8 6.293 6.854 5.146z"></path>
+                    </svg>
+                    <h2 class="text-center mb-3">Товаров нет :(</h2>
+                    <span class="text-muted mb-5"
+                          style="font-size: 18px">Возможно, они скоро появятся :)</span>
+                </div>
+            </div>  
+            `;
+        }
     }
 
     printDiscountForm() {

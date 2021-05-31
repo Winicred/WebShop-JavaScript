@@ -136,7 +136,7 @@ public class LoginServletJSON extends HttpServlet {
 
                 User loginUser = userFacade.findByLogin(login);
                 if (loginUser == null) {
-                    json = job.add("requestStatus", "false")
+                    json = job.add("requestStatus", false)
                             .add("info", "Нет такого пользователя!")
                             .build()
                             .toString();
@@ -145,7 +145,7 @@ public class LoginServletJSON extends HttpServlet {
 
                 password = LoginServletJSON.createHash(password, loginUser.getSalt());
                 if (!password.equals(loginUser.getPassword())) {
-                    json = job.add("requestStatus", "false")
+                    json = job.add("requestStatus", false)
                             .add("info", "Нет такого пользователя!")
                             .build()
                             .toString();
@@ -154,7 +154,7 @@ public class LoginServletJSON extends HttpServlet {
 
                 HttpSession httpSession = request.getSession(true);
                 httpSession.setAttribute("user", loginUser);
-                json = job.add("requestStatus", "true")
+                json = job.add("requestStatus", true)
                         .add("info", "Вы вошли как " + '"' + loginUser.getLogin() + '"' + ".")
                         .add("token", httpSession.getId())
                         .add("role", userRolesFacade.getTopRoleForUser(loginUser))
@@ -167,7 +167,7 @@ public class LoginServletJSON extends HttpServlet {
 
                 if (httpSession != null) {
                     httpSession.invalidate();
-                    json = job.add("requestStatus", "true")
+                    json = job.add("requestStatus", true)
                             .add("info", "Вы вышли!")
                             .build()
                             .toString();
@@ -181,16 +181,18 @@ public class LoginServletJSON extends HttpServlet {
                 listProducts.forEach(product -> {
                     jsonArrayBuilder.add(new JSONProductBuilder().createJSONProduct(product));
                 });
-                json = jsonArrayBuilder.build().toString();
 
+                json = jsonArrayBuilder.build().toString();
                 break;
         }
+
         if ("".equals(json) || json == null) {
-            json = job.add("requestStatus", "false")
+            json = job.add("requestStatus", false)
                     .add("info", "Ошибка обработки запроса!")
                     .build()
                     .toString();
         }
+
         try (PrintWriter out = response.getWriter()) {
             out.println(json);
         }

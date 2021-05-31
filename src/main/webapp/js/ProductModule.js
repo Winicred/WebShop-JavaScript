@@ -55,14 +55,13 @@ class ProductModule {
 
     async loadListCategories() {
         let response = await fetch("listCategoriesJSON", {
-            method: 'GET',
+            method: 'GET'
         })
 
         if (response.ok) {
-            let result = await response.json();
-            return result;
+            return await response.json();
         } else {
-            document.getElementById("info").innerHTML = "Ошибка сервера";
+            console.log("Ошибка сервера");
             return null;
         }
     }
@@ -76,8 +75,7 @@ class ProductModule {
         })
 
         if (response.ok) {
-            let result = await response.json()
-            return result;
+            return await response.json();
         } else {
             console.log("INFO: Ошибка сервера.")
             return null;

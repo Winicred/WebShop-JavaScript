@@ -1,3 +1,4 @@
+import {printProductModule} from "./prints/PrintProductModule.js";
 
 class AuthModule {
     async login() {
@@ -21,7 +22,7 @@ class AuthModule {
             console.log("Request status: " + result.requestStatus);
             document.getElementById("content").innerHTML = "";
             if (result.requestStatus) {
-                sessionStorage.setItem("token", JSON.stringify(result.requestStatus));
+                sessionStorage.setItem("token", JSON.stringify(result.token));
                 sessionStorage.setItem("role", JSON.stringify(result.role));
             } else {
                 if (sessionStorage.getItem(token) !== null) {
@@ -32,7 +33,8 @@ class AuthModule {
         } else {
             console.log("Ошибка получения данных");
         }
-        authModule.toggleMenu();
+        this.toggleMenu();
+
     }
 
     async logout() {
@@ -48,21 +50,21 @@ class AuthModule {
 
         if (response.ok) {
             const result = await response.json();
-            if (result.requestStatus) {
-                sessionStorage.removeItem("token");
-                sessionStorage.removeItem("role");
-            }
+            document.getElementById("info").innerHTML = result.info;
+            console.log(result.info);
+            sessionStorage.removeItem("token");
+            sessionStorage.removeItem("role");
+            document.getElementById("info").innerHTML = "";
+            printProductModule.printListProducts();
         }
         authModule.toggleMenu();
     }
 
     toggleMenu() {
         let role = null;
-
         if (sessionStorage.getItem("role") !== null) {
             role = JSON.parse(sessionStorage.getItem("role"));
         }
-
         console.log("AuthModule: Token - " + sessionStorage.getItem("token"));
         console.log("AuthModule: Role - " + sessionStorage.getItem("role"));
 

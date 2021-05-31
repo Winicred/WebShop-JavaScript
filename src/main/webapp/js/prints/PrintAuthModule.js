@@ -1,5 +1,5 @@
-import {userModule} from "../UserModule.js";
 import {authModule} from "../AuthModule.js";
+import {printUserModule} from "./PrintUserModule.js";
 
 class PrintAuthModule {
     printLogin() {
@@ -17,7 +17,7 @@ class PrintAuthModule {
                         <input type="password" class="form-control" id="password" placeholder="Пароль" required>
                     </div>
                     <div class="mx-auto w-25">
-                        <input type="submit" value="Войти" id="submit" class="btn w-100 btn-primary submit">
+                        <button type="submit" id="submit" class="btn w-100 btn-primary">Войти</button>
                     </div>
                     <div class="mt-1 mb-1">
                         <div class="d-flex justify-content-center flex-row">
@@ -35,7 +35,7 @@ class PrintAuthModule {
         }
         document
             .getElementById("registration")
-            .addEventListener("click", userModule.printRegistration);
+            .addEventListener("click", printUserModule.printRegistration);
     }
 }
 

@@ -52,7 +52,6 @@ public class AdminServletJSON extends HttpServlet {
             case "/listUsersJSON":
                 response.setContentType("application/json");
                 List<User> listUsers = userFacade.findAll();
-                List<Role> listUserRoles = null;
 
                 JsonArrayBuilder jab = Json.createArrayBuilder();
                 for (User user : listUsers) {
@@ -63,7 +62,7 @@ public class AdminServletJSON extends HttpServlet {
                     );
                 }
 
-                json = job.add("requestStatus", "true")
+                json = job.add("requestStatus", true)
                         .add("info", "Список пользователей")
                         .add("listUsers", jab.build())
                         .build()
@@ -74,13 +73,14 @@ public class AdminServletJSON extends HttpServlet {
                 listUsers = userFacade.findAll();
                 jab = Json.createArrayBuilder();
                 job = Json.createObjectBuilder();
+
                 for (User u : listUsers) {
                     String role = userRolesFacade.getTopRoleForUser(u);
-                    job.add("user", new JSONUserBuilder().createJSONUser(u));
-                    job.add("role", role);
+
+                    job.add("user", new JSONUserBuilder().createJSONUser(u))
+                            .add("role", role);
                     jab.add(job.build());
                 }
-                json = jab.build().toString();
                 break;
 
             case "/listRolesJson":
@@ -93,23 +93,30 @@ public class AdminServletJSON extends HttpServlet {
                             .add("roleName", r.getRoleName());
                     jab.add(job.build());
                 }
-                json = jab.build().toString();
 
+                json = jab.build().toString();
                 break;
 
             case "/setRoleToUserJson":
                 JsonReader jsonReader = Json.createReader(request.getInputStream());
                 jsonObject = jsonReader.readObject();
-                long LuserId = jsonObject.getInt("userId");
-                long LroleId = jsonObject.getInt("roleId");
-                Role role = roleFacade.find(LroleId);
-                userRolesFacade.setRole(role.getRoleName(), userFacade.find(LuserId));
-                json = "{\"info\":\"Ok\"}";
+
+                long newUserId = jsonObject.getInt("userId");
+                long newRoleId = jsonObject.getInt("roleId");
+
+                User userWithNewRole = userFacade.find(newUserId);
+                Role newRole = roleFacade.find(newRoleId);
+                userRolesFacade.setRole(newRole.getRoleName(), userWithNewRole);
+
+                json = job.add("requestStatus", true)
+                        .add("info", "Роль пользователя " + userWithNewRole + " изменена.")
+                        .build()
+                        .toString();
                 break;
         }
 
         if (json == null && "".equals(json)) {
-            json = job.add("requestStatus", "false")
+            json = job.add("requestStatus", false)
                     .add("info", "Ошибка обработки запроса.")
                     .build()
                     .toString();

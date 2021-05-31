@@ -106,7 +106,7 @@ public class ManagerServletJSON extends HttpServlet {
                 }
 
                 if (cover == null) {
-                    json = job.add("requestStatus", "false")
+                    json = job.add("requestStatus", false)
                             .add("info", "Выберите файл обложки товара.")
                             .build()
                             .toString();
@@ -160,7 +160,7 @@ public class ManagerServletJSON extends HttpServlet {
                 productFacade.create(product);
                 JSONProductBuilder jsonProductBuilder = new JSONProductBuilder();
                 JsonObject jsonProduct = jsonProductBuilder.createJSONProduct(product);
-                json = job.add("requestStatus", "true")
+                json = job.add("requestStatus", true)
                         .add("info", "Товар " + '"' + product.getBrand() + " " + product.getSeries() + " " + product.getModel() + '"' + " добавлен.")
                         .add("product", jsonProduct.toString())
                         .build()
@@ -175,7 +175,7 @@ public class ManagerServletJSON extends HttpServlet {
                 categoryFacade.create(category);
                 JSONCategoryBuilder jsonCategoryBuilder = new JSONCategoryBuilder();
                 JsonObject jsonCategory = jsonCategoryBuilder.createJSONCategory(category);
-                json = job.add("requestStatus", "true")
+                json = job.add("requestStatus", true)
                         .add("info", "Категория " + '"' + categoryName + '"' + " добавлена.")
                         .add("category", jsonCategory.toString())
                         .build()
@@ -189,7 +189,7 @@ public class ManagerServletJSON extends HttpServlet {
                 String deletedCategoryName = deletedCategory.getCategoryName();
                 categoryFacade.remove(deletedCategory);
 
-                json = job.add("requestStatus", "true")
+                json = job.add("requestStatus", true)
                         .add("info", "Категория " + '"' + deletedCategoryName + '"' + " удалена.")
                         .build()
                         .toString();
@@ -199,16 +199,16 @@ public class ManagerServletJSON extends HttpServlet {
                 List<Category> listCategories = categoryFacade.findAll();
 
                 JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-                listCategories.forEach(categoryInList -> {
-                    jsonArrayBuilder.add(new JSONCategoryBuilder().createJSONCategory(categoryInList));
+                listCategories.forEach(c -> {
+                    jsonArrayBuilder.add(new JSONCategoryBuilder().createJSONCategory(c));
                 });
-                json = jsonArrayBuilder.build().toString();
 
+                json = jsonArrayBuilder.build().toString();
                 break;
         }
 
         if (json == null && "".equals(json)) {
-            json = job.add("requestStatus", "false")
+            json = job.add("requestStatus", false)
                     .add("info", "Ошибка обработки запроса.")
                     .build()
                     .toString();
