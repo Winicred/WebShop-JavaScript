@@ -1,0 +1,183 @@
+<!--
+    1. Сделать профиль и его изменение
+        1.1. Сделать изменение профиля пользователей от админа
+    2. Сделать список товаров
+        2.1. Исправить ошибку с картинкой (не выводится)
+        2.2. Сделать возможность доавбления в корзину
+        2.3. Сделать покупку в один клик
+        2.4. Изменить дизайн
+    3. Поправить список покупателей
+        3.1. Изменить дизайн списка
+    4. Сделать список проданных товаров
+    5. Сделать добавление промо-кода и его удаление
+    6. Сделать иконку профиля в навигационной панели
+
+    * Сделать карусель
+    ** Изменить оформление главной страницы
+-->
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8"/>
+    <title>LapShop</title>
+    <link href="css/main.css" rel="stylesheet"/>
+    <link crossorigin="anonymous" href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/css/bootstrap.min.css"
+          integrity="sha384-eOJMYsd53ii+scO/bJGFsiCZc+5NDVN2yr8+0RDqr0Ql0h+rP48ckxlpbzKgwra6" rel="stylesheet"/>
+</head>
+
+<body id="container">
+<nav class="navbar navbar-dark navbar-expand-lg" style="margin-bottom: 3rem; background-color: #1266f1">
+    <div class="container-fluid" onload="authModule.toggleMenu()">
+        <a class="navbar-brand d-flex flex-column" href="index.html"
+           style="padding: 0 2rem; border-right: 1px solid #ffffff">
+            <span class="text-center">LapShop</span>
+            <small style="font-size: 10px; margin-top: -6px">магазин ноутбуков</small>
+        </a>
+        <button aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation"
+                class="navbar-toggler"
+                data-bs-target="#navbarNavAltMarkup" data-bs-toggle="collapse" type="button">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup" style="margin-left: 1rem">
+            <div class="navbar-nav w-100">
+                <a class="nav-link" href="#addProduct" id="addProduct">Добавить товар</a>
+                <a class="nav-link" href="#listProducts" id="listProducts">Список товаров</a>
+                <a class="nav-link" href="#listBuyers" id="listBuyers">Список покупателей</a>
+                <a class="nav-link" href="#buyProduct" id="buyProduct">Купить товар</a>
+                <a class="nav-link" href="#showBoughtProducts" id="showBoughtProducts">Список проданных товаров</a>
+                <a class="nav-link" href="#discountForm" id="discountForm">Добавить промо-код</a>
+                <div class="navbar-nav" style="margin-left: auto">
+                    <div class="navbar-nav" id="emptyUserContainer" style="margin-left: auto; margin-right: 2rem">
+                        <div class="dropdown d-flex">
+                            <a type="button" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <span>Гость</span>
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" style="left: -90px"
+                                aria-labelledby="dropdownMenuLink">
+                                <li><a class="dropdown-item" href="#login" id="login">Вход</a></li>
+                                <li><a class="dropdown-item" href="#registration" id="registrationLink">Регистрация</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="navbar-nav" id="userContainer" style="margin-left: auto; margin-right: 2rem">
+                        <div class="dropdown d-flex">
+                            <a type="button" class="nav-link dropdown-toggle active" data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                <img src="insertAvatar/${buyer.avatar.path}" alt="" width="20" height="20"
+                                     style="border-radius: 90px">
+                            </a>
+
+                            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-lg-start" style="left: -90px"
+                                aria-labelledby="dropdownMenuLink">
+                                <li class="text-center">
+                                        <span>Вы вошли как:<br><strong>${user.login}</strong><br><span
+                                                class="text-muted"
+                                                style="font-size: 14px">ID:${buyer.id}</span></span>
+                                </li>
+
+                                <div id="adminPanelDiv">
+                                    <li>
+                                        <hr>
+                                    </li>
+
+                                    <li><a class="dropdown-item" href="#adminPanel" id="adminPanel">Панель админа</a>
+                                    </li>
+                                </div>
+
+                                <li>
+                                    <hr>
+                                </li>
+
+                                <li><a class="dropdown-item" href="#checkProfile">Мой профиль</a></li>
+
+                                <li>
+                                    <hr>
+                                </li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex justify-content-between"
+                                       href="#balanceReplenishmentForm"
+                                       style="font-size: 20px; font-weight: 700;">
+                                        <span style="width: 100px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${Math.round(buyer.money * 1000) / 1000}€</span>
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-cash-stack my-auto"
+                                                viewBox="0 0 16 16">
+                                            <path d="M1 3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1H1zm7 8a2 2 0 1 0 0-4 2 2 0 0 0 0 4z"></path>
+                                            <path d="M0 5a1 1 0 0 1 1-1h14a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V5zm3 0a2 2 0 0 1-2 2v4a2 2 0 0 1 2 2h10a2 2 0 0 1 2-2V7a2 2 0 0 1-2-2H3z"></path>
+                                        </svg>
+                                    </a>
+                                </li>
+
+
+                                <li><a class="dropdown-item" href="#buyerPurchases">Мои покупки</a></li>
+
+                                <li>
+                                    <a class="dropdown-item d-flex flex-row justify-content-between"
+                                       href="#shoppingCartForm">Моя корзина
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-cart-fill my-auto"
+                                                viewBox="0 0 16 16">
+                                            <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li><span><hr></span></li>
+                                <li>
+                                    <a class="dropdown-item d-flex flex-row justify-content-between"
+                                       href="#editProfileForm">Настройки
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg"
+                                                width="15" height="15"
+                                                fill="currentColor" class="bi bi-gear-fill my-auto"
+                                                viewBox="0 0 16 16">
+                                            <path d="M9.405 1.05c-.413-1.4-2.397-1.4-2.81 0l-.1.34a1.464 1.464 0 0 1-2.105.872l-.31-.17c-1.283-.698-2.686.705-1.987 1.987l.169.311c.446.82.023 1.841-.872 2.105l-.34.1c-1.4.413-1.4 2.397 0 2.81l.34.1a1.464 1.464 0 0 1 .872 2.105l-.17.31c-.698 1.283.705 2.686 1.987 1.987l.311-.169a1.464 1.464 0 0 1 2.105.872l.1.34c.413 1.4 2.397 1.4 2.81 0l.1-.34a1.464 1.464 0 0 1 2.105-.872l.31.17c1.283.698 2.686-.705 1.987-1.987l-.169-.311a1.464 1.464 0 0 1 .872-2.105l.34-.1c1.4-.413 1.4-2.397 0-2.81l-.34-.1a1.464 1.464 0 0 1-.872-2.105l.17-.31c.698-1.283-.705-2.686-1.987-1.987l-.311.169a1.464 1.464 0 0 1-2.105-.872l-.1-.34zM8 10.93a2.929 2.929 0 1 1 0-5.86 2.929 2.929 0 0 1 0 5.858z"></path>
+                                        </svg>
+                                    </a>
+                                </li>
+                                <li><a class="dropdown-item" href="#checkQuestions">Помощь</a></li>
+                                <li>
+                                    <a class="dropdown-item d-flex flex-row justify-content-between" href="#logout"
+                                       id="logout">Выйти
+                                        <svg
+                                                xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                                fill="currentColor" class="bi bi-door-open-fill my-auto"
+                                                viewBox="0 0 16 16">
+                                            <path d="M1.5 15a.5.5 0 0 0 0 1h13a.5.5 0 0 0 0-1H13V2.5A1.5 1.5 0 0 0 11.5 1H11V.5a.5.5 0 0 0-.57-.495l-7 1A.5.5 0 0 0 3 1.5V15H1.5zM11 2h.5a.5.5 0 0 1 .5.5V15h-1V2zm-2.5 8c-.276 0-.5-.448-.5-1s.224-1 .5-1 .5.448.5 1-.224 1-.5 1z"></path>
+                                        </svg>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<p class="w-100 text-center text-danger" id="info"></p>
+<div id="content"></div>
+
+<footer>
+    <script src="js/main.js" type="module"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha512-2rNj2KJ+D8s1ceNasTIex6z4HWyOnEYLVC3FigGOmyQCZc2eBXKgOxQmo3oKLHyfcj53uz4QMsRCWNbLd32Q1g=="
+            src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.9.2/umd/popper.min.js"></script>
+    <script crossorigin="anonymous"
+            integrity="sha384-j0CNLUeiqtyaRmlzUHCPZ+Gy5fQu0dQ6eZ/xAww941Ai1SxSY+0EQqNXNE6DZiVc"
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta3/dist/js/bootstrap.min.js"></script>
+</footer>
+</body>
+</html>

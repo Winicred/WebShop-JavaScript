@@ -10,7 +10,7 @@ import java.io.*;
 import java.net.URLDecoder;
 
 @WebServlet(name = "InsertFileJSON", urlPatterns = {
-        "/insertCover",
+        "/insertCover/*",
 })
 
 public class InsertFileJSON extends HttpServlet {

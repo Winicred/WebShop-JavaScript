@@ -550,36 +550,122 @@ class PrintProductModule {
         content.innerHTML = '<h3 class="w-100 my-5 text-center">Список товаров</h3>';
         
         if (listProducts.length !== 0) {
-            let divForCarts = document.createElement("div");
-            divForCarts.classList.add("w-100");
-            divForCarts.classList.add("d-flex")
-            divForCarts.classList.add("justify-content-center");
+            // let divForCarts = document.createElement("div");
+            // divForCarts.classList.add("w-100");
+            // divForCarts.classList.add("d-flex")
+            // divForCarts.classList.add("justify-content-center");
+            // for (let product of listProducts) {
+            //     let cart = document.createElement("div");
+            //     cart.classList.add("card");
+            //     cart.classList.add("m-2");
+            //     cart.style.cssText = `max-width: 12rem; max-height: 25rem; border:0`;
+            //     cart.innerHTML = '<p class="card-text text-danger w-100 d-flex justify-content-center">&nbsp;</p>';
+            //     let img = document.createElement("img");
+            //     img.classList.add("card-img-top");
+            //     img.style.cssText = `max-width: 12rem; max-height: 15rem`;
+            //     img.setAttribute("src", `insertCover/${product.cover.path}`);
+            //     cart.insertAdjacentElement("beforeEnd", img);
+            //     cart.insertAdjacentHTML("beforeEnd",
+            //         `<div class="card-body">
+            //                <h5 class="card-title m-0">${product.brand} ${product.series}</h5>
+            //                <p class="card-text m-0">${product.price}€</p>
+            //                <p class="d-inline">
+            //                    <a href="readBook?productId=${product.id}" class="link text-nowrap">Читать</a>
+            //                    <a href="addToBasket?productId=${product.id}" class="link text-nowrap">В корзину</a>
+            //                </p>
+            //           </div>`
+            //     );
+            //     divForCarts.insertAdjacentElement("beforeEnd", cart);
+            //
+            // }
+            //
+            // content.insertAdjacentElement("beforeEnd", divForCarts);
+
+            let divsForList = document.createElement("div");
+            divsForList.classList.add("w-50", "d-flex", "flex-column", "mx-auto");
+
             for (let product of listProducts) {
                 let cart = document.createElement("div");
-                cart.classList.add("card");
-                cart.classList.add("m-2");
-                cart.style.cssText = `max-width: 12rem; max-height: 25rem; border:0`;
-                cart.innerHTML = '<p class="card-text text-danger w-100 d-flex justify-content-center">&nbsp;</p>';
-                let img = document.createElement("img");
-                img.classList.add("card-img-top");
-                img.style.cssText = `max-width: 12rem; max-height: 15rem`;
-                img.setAttribute("src", "insertCover/${product.cover.path}");
-                cart.insertAdjacentElement("beforeEnd", img);
-                cart.insertAdjacentHTML("beforeEnd",
-                    `<div class="card-body">
-                           <h5 class="card-title m-0">${product.brand} ${product.series}</h5>
-                           <p class="card-text m-0">${product.price}€</p>
-                           <p class="d-inline">
-                               <a href="readBook?productId=${product.id}" class="link text-nowrap">Читать</a>
-                               <a href="addToBasket?productId=${product.id}" class="link text-nowrap">В корзину</a>
-                           </p>
-                      </div>`
-                );
-                divForCarts.insertAdjacentElement("beforeEnd", cart);
+                cart.classList.add("row", "flex-nowrap", "p-2", "bg-white", "border", "rounded", "mt-2");
 
+                let img = document.createElement('img');
+                img.classList.add('card-img-top');
+                img.style.cssText = `max-width: 12rem; max-height: 15rem; margin: auto 10px auto 10px;`;
+                img.setAttribute('src', `insertCover/${product.cover.path}`);
+
+                cart.insertAdjacentElement('beforeEnd', img);
+                cart.insertAdjacentHTML('beforeEnd',
+                    `
+                <div class="p-2 bg-white mt-2 flex-shrink-1">
+                        <div class="col-md-6 mt-1">
+                            <h5>${product.brand} ${product.series} ${product.model}</h5>
+                            <div class="d-flex flex-row">
+                                <div class="ratings mr-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16" style="fill: #ffa500">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16" style="fill: #ffa500">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16" style="fill: #ffa500">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16" style="fill: #ffa500">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                                    </svg>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                         fill="currentColor"
+                                         class="bi bi-star-fill" viewBox="0 0 16 16" style="fill: #ffa500">
+                                        <path d="M3.612 15.443c-.386.198-.824-.149-.746-.592l.83-4.73L.173 6.765c-.329-.314-.158-.888.283-.95l4.898-.696L7.538.792c.197-.39.73-.39.927 0l2.184 4.327 4.898.696c.441.062.612.636.282.95l-3.522 3.356.83 4.73c.078.443-.36.79-.746.592L8 13.187l-4.389 2.256z"></path>
+                                    </svg>
+                                </div>
+                                <span style="margin-top: 2px; margin-left: 4px">asdads</span>
+                            </div>
+                            <div class="mt-1 mb-1 spec-1 d-flex flex-column">
+                            <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                </svg>
+                                Процессор: ${product.cpuType} ${product.cpuModel} ${product.cpuFrequency}</span>
+                                <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                </svg>
+                                Видеокарта: ${product.gpuType} ${product.gpuModel}
+                            </span>
+                                <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                </svg>
+                                ОЗУ: ${product.ramSize}, ${product.ramType}, ${product.ramClockSpeed}
+                            </span>
+                                <span>
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                </svg>
+                                Аккумулятор: ${product.batteryTechnology}, время работы: ${product.batteryLife} часов
+                            </span>
+                            </div>
+                            <a data-bs-target="#exampleModal" data-bs-toggle="modal"
+                               id="viewDetailButton"
+                               class="d-flex" style="cursor: pointer; margin: 6px 0">Смотреть подробнее</a>
+                `);
+                divsForList.insertAdjacentElement("beforeEnd", cart);
             }
+            content.insertAdjacentElement("beforeEnd", divsForList);
 
-            content.insertAdjacentElement("beforeEnd", divForCarts);
         } else {
             content.innerHTML =
                 `

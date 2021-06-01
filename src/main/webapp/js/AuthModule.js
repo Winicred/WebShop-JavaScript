@@ -68,46 +68,62 @@ class AuthModule {
         console.log("AuthModule: Token - " + sessionStorage.getItem("token"));
         console.log("AuthModule: Role - " + sessionStorage.getItem("role"));
 
-        if (role === null) {
-            document.getElementById("listProducts").style.display = "block";
-            document.getElementById("login").style.display = "block";
-            document.getElementById("logout").style.display = "none";
-            document.getElementById("addProduct").style.display = "none";
-            document.getElementById("showBoughtProducts").style.display = "none";
-            document.getElementById("discountForm").style.display = "none";
-            document.getElementById("listBuyers").style.display = "none";
-            document.getElementById("registrationLink").style.display = "block";
-            document.getElementById("adminPanel").style.display = "none";
-        } else if (role === "BUYER") {
-            document.getElementById("listProducts").style.display = "block";
-            document.getElementById("login").style.display = "none";
-            document.getElementById("logout").style.display = "block";
-            document.getElementById("addProduct").style.display = "none";
-            document.getElementById("showBoughtProducts").style.display = "none";
-            document.getElementById("discountForm").style.display = "none";
-            document.getElementById("listBuyers").style.display = "none";
-            document.getElementById("registrationLink").style.display = "none";
-            document.getElementById("adminPanel").style.display = "none";
-        } else if (role === "MANAGER") {
-            document.getElementById("listProducts").style.display = "block";
-            document.getElementById("login").style.display = "none";
-            document.getElementById("logout").style.display = "block";
-            document.getElementById("addProduct").style.display = "block";
-            document.getElementById("showBoughtProducts").style.display = "block";
-            document.getElementById("discountForm").style.display = "block";
-            document.getElementById("listBuyers").style.display = "none";
-            document.getElementById("registrationLink").style.display = "none";
-            document.getElementById("adminPanel").style.display = "none";
-        } else if (role === "ADMIN") {
-            document.getElementById("listProducts").style.display = "block";
-            document.getElementById("login").style.display = "none";
-            document.getElementById("logout").style.display = "block";
-            document.getElementById("addProduct").style.display = "block";
-            document.getElementById("showBoughtProducts").style.display = "block";
-            document.getElementById("discountForm").style.display = "block";
-            document.getElementById("listBuyers").style.display = "block";
-            document.getElementById("adminPanel").style.display = "block";
-            document.getElementById("registrationLink").style.display = "none";
+        switch (role) {
+            case null:
+                document.getElementById("listProducts").style.display = "block";
+                document.getElementById("login").style.display = "block";
+                document.getElementById("registrationLink").style.display = "block";
+                document.getElementById("emptyUserContainer").style.display = "block";
+                document.getElementById("logout").style.display = "none";
+                document.getElementById("addProduct").style.display = "none";
+                document.getElementById("showBoughtProducts").style.display = "none";
+                document.getElementById("discountForm").style.display = "none";
+                document.getElementById("listBuyers").style.display = "none";
+                document.getElementById("adminPanelDiv").style.display = "none";
+                document.getElementById("userContainer").style.display = "none";
+                break;
+
+            case "BUYER":
+                document.getElementById("listProducts").style.display = "block";
+                document.getElementById("logout").style.display = "block";
+                document.getElementById("userContainer").style.display = "block";
+                document.getElementById("login").style.display = "none";
+                document.getElementById("addProduct").style.display = "none";
+                document.getElementById("showBoughtProducts").style.display = "none";
+                document.getElementById("discountForm").style.display = "none";
+                document.getElementById("listBuyers").style.display = "none";
+                document.getElementById("registrationLink").style.display = "none";
+                document.getElementById("adminPanelDiv").style.display = "none";
+                document.getElementById("emptyUserContainer").style.display = "none";
+                break;
+
+            case "MANAGER":
+                document.getElementById("listProducts").style.display = "block";
+                document.getElementById("logout").style.display = "block";
+                document.getElementById("addProduct").style.display = "block";
+                document.getElementById("showBoughtProducts").style.display = "block";
+                document.getElementById("discountForm").style.display = "block";
+                document.getElementById("userContainer").style.display = "block";
+                document.getElementById("login").style.display = "none";
+                document.getElementById("listBuyers").style.display = "none";
+                document.getElementById("registrationLink").style.display = "none";
+                document.getElementById("adminPanelDiv").style.display = "none";
+                document.getElementById("emptyUserContainer").style.display = "none";
+                break;
+
+            case "ADMIN":
+                document.getElementById("listProducts").style.display = "block";
+                document.getElementById("logout").style.display = "block";
+                document.getElementById("addProduct").style.display = "block";
+                document.getElementById("showBoughtProducts").style.display = "block";
+                document.getElementById("discountForm").style.display = "block";
+                document.getElementById("listBuyers").style.display = "block";
+                document.getElementById("adminPanelDiv").style.display = "block";
+                document.getElementById("userContainer").style.display = "block";
+                document.getElementById("login").style.display = "none";
+                document.getElementById("registrationLink").style.display = "none";
+                document.getElementById("emptyUserContainer").style.display = "none";
+                break;
         }
     }
 }
