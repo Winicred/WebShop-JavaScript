@@ -546,6 +546,17 @@ class PrintProductModule {
 
     async printListProducts() {
         const listProducts = await productModule.loadListProducts();
+
+        let inStock =
+        `
+        <span>Да</span>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
+             style="fill: #32CD32; margin-top: 6px"
+             class="bi bi-check-circle-fill" viewBox="0 0 24 24">
+            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zm-3.97-3.03a.75.75 0 0 0-1.08.022L7.477 9.417 5.384 7.323a.75.75 0 0 0-1.06 1.06L6.97 11.03a.75.75 0 0 0 1.079-.02l3.992-4.99a.75.75 0 0 0-.01-1.05z"></path>
+        </svg>
+        `;
+
         let content = document.getElementById("content");
         content.innerHTML = '<h3 class="w-100 my-5 text-center">Список товаров</h3>';
         
@@ -585,6 +596,7 @@ class PrintProductModule {
             divsForList.classList.add("w-50", "d-flex", "flex-column", "mx-auto");
 
             for (let product of listProducts) {
+                let productId = product.id;
                 let cart = document.createElement("div");
                 cart.classList.add("row", "flex-nowrap", "p-2", "bg-white", "border", "rounded", "mt-2");
 
@@ -597,7 +609,8 @@ class PrintProductModule {
                 cart.insertAdjacentHTML('beforeEnd',
                     `
                 <div class="p-2 bg-white mt-2 flex-shrink-1">
-                        <div class="col-md-6 mt-1">
+                        <div class="col-md-6 mt-1 w-100">
+                        <input type="hidden" id="productId" value="${product.id}">
                             <h5>${product.brand} ${product.series} ${product.model}</h5>
                             <div class="d-flex flex-row">
                                 <div class="ratings mr-2">
@@ -658,14 +671,147 @@ class PrintProductModule {
                                 Аккумулятор: ${product.batteryTechnology}, время работы: ${product.batteryLife} часов
                             </span>
                             </div>
-                            <a data-bs-target="#exampleModal" data-bs-toggle="modal"
-                               id="viewDetailButton"
-                               class="d-flex" style="cursor: pointer; margin: 6px 0">Смотреть подробнее</a>
+                            
+                            <a data-bs-target="#exampleModal${productId.count}" data-bs-toggle="modal"
+                                    id="viewDetailButton${productId.count}" style="color: blue; cursor: pointer;">
+                                Смотреть
+                            </a>
+                            
+                            
+                             <div class="modal fade" id="exampleModal${productId.count}" tabindex="-1" aria-labelledby="exampleModalLabel"
+                                 aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">Описание товара "<i>${product.brand} ${product.series} ${product.model}</i>"
+                                            </h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>Категория: <span style="font-weight: bold">${product.category.categoryName}</span></p>
+                                            <hr>
+                                            <p>Бренд: <span style="font-weight: bold">${product.brand}</span></p>
+                                            <p>Серия: <span style="font-weight: bold">${product.series}</span></p>
+                                            <p>Модель: <span style="font-weight: bold">${product.model}</span></p>
+                                            <p>Цвет: <span style="font-weight: bold">${product.color}</span></p>
+                                            <p>Вес: <span style="font-weight: bold">${product.weight}</span></p>
+                                            <p>Длина: <span style="font-weight: bold">${product.length}</span></p>
+                                            <p>Ширина: <span style="font-weight: bold">${product.width}</span></p>
+                                            <p>Высота: <span style="font-weight: bold">${product.height}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Диагональ экрана: <span style="font-weight: bold">${product.screenDiagonal}</span></p>
+                                            <p>Разрешение экрана: <span style="font-weight: bold">${product.resolution}</span></p>
+                                            <p>Сенсорный экран: <span style="font-weight: bold">${product.touchScreen}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Операционная система: <span style="font-weight: bold">${product.touchScreen}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Тип процессора: <span style="font-weight: bold">${product.cpuType}</span></p>
+                                            <p>Класс процессора: <span style="font-weight: bold">${product.cpuClass}</span></p>
+                                            <p>Модель процессора: <span style="font-weight: bold">${product.cpuModel}</span></p>
+                                            <p>Частота процессора: <span style="font-weight: bold">${product.cpuFrequency}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Тип оперативной памяти: <span style="font-weight: bold">${product.cpuFrequency}</span>
+                                            </p>
+                                            <p>Оперативная память (RAM): <span
+                                                    style="font-weight: bold">${product.cpuFrequency}</span>
+                                            </p>
+                                            <p>Частота оперативной памяти: <span
+                                                    style="font-weight: bold">${product.cpuFrequency}</span>
+                                            </p>
+                    
+                                            <hr>
+                    
+                                            <p>SSD диск: <span style="font-weight: bold">${product.ssd}</span></p>
+                                            <p>Объем диска SSD: <span style="font-weight: bold">${product.ssdCapacity}</span></p>
+                                            <p>HDD диск: <span style="font-weight: bold">${product.hdd}</span></p>
+                                            <p>Объем диска HDD: <span style="font-weight: bold">${product.hddCapacity}</span></p>
+                                            <p>Общий объём памяти: <span style="font-weight: bold">${product.totalPcMemory}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Тип видеокарты: <span style="font-weight: bold">${product.gpuType}</span></p>
+                                            <p>Модель видеокарты: <span style="font-weight: bold">${product.gpuModel}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Дисковод: <span style="font-weight: bold">${product.diskDrive}</span></p>
+                                            <p>Видеокамера: <span style="font-weight: bold">${product.camera}</span></p>
+                                            <p>Микрофон: <span style="font-weight: bold">${product.microphone}</span></p>
+                    
+                                            <hr>
+                    
+                                            <p>Материал корпуса: <span style="font-weight: bold">${product.bodyMaterial}</span></p>
+                                            <p>Русская раскладка: <span
+                                                    style="font-weight: bold">${product.russianKeyboardLayout}</span>
+                                            </p>
+                                            <p>Эстонская раскладка: <span
+                                                    style="font-weight: bold">${product.estonianKeyboardLayout}</span>
+                                            </p>
+                                            <p>Подсветка клавиатуры: <span style="font-weight: bold">${product.backlitKeyboard}</span>
+                                            </p>
+                                            <p>Влагостойкая клавиатура: <span
+                                                    style="font-weight: bold">${product.waterproofKeyboard}</span>
+                                            </p>
+                    
+                                            <hr>
+                    
+                                            <p>Технология батареи: <span style="font-weight: bold">${product.batteryTechnology}</span>
+                                            </p>
+                                            <p>Время работы батареи: <span style="font-weight: bold">${product.batteryLife} часов</span>
+                                            </p>
+                    
+                                            <hr>
+                    
+                                            <p>Гарантия: <span style="font-weight: bold"> ${product.guarantee} месяц(ев)</span></p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Закрыть
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+
                 `);
+
+                let divButtons = document.createElement("div");
+                divButtons.classList.add("w-25", "flex-wrap", "justify-content-between");
+
+                divButtons.innerHTML =
+                    `
+                    <p class="card-text" style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 12rem; margin-top: 6px; margin-bottom: 0">
+                        Цена: <strong>${product.price}€</strong>
+                    </p>
+                    
+                    <p class="card-text" style="margin-bottom: 0">
+                        Наличие: <strong>${inStock}</strong>
+                    </p>
+                    
+                    <hr class="my-3">
+                    
+                    <a href="#" id="addToBag" class="btn btn-primary w-100">Добавить в корзину</a>
+                    <a href="#buyProduct?productId=${product.id}" id="buyProductButton" class="btn btn-primary w-100 mt-3">Купить сразу</a>
+                    `
+
+                cart.insertAdjacentElement('beforeEnd', divButtons);
+
                 divsForList.insertAdjacentElement("beforeEnd", cart);
             }
             content.insertAdjacentElement("beforeEnd", divsForList);
 
+            document.getElementById("buyProductButton").onclick = function () {
+                document.getElementById("info").innerHTML = "";
+                productModule.buyProduct();
+            };
         } else {
             content.innerHTML =
                 `
@@ -693,6 +839,10 @@ class PrintProductModule {
     }
 
     printBuyProduct() {
+
+    }
+
+    printBagForm() {
 
     }
 }

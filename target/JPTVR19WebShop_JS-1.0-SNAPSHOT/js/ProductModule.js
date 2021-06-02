@@ -188,6 +188,26 @@ class ProductModule {
             $this.prop("value", newVal);
         });
     }
+
+    async buyProduct() {
+        let productId = document.getElementById("productId");
+        const buyProduct = {
+            "productId": productId
+        };
+
+        let response = await fetch("buyProductJSON", {
+            method: "POST",
+            body: JSON.stringify(buyProduct)
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            await printProductModule.printListProducts();
+            document.getElementById("info").innerHTML = result.info;
+        } else {
+            console.log("Ошибка сервера");
+        }
+    }
 }
 
 let productModule = new ProductModule();
