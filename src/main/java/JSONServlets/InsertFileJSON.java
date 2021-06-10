@@ -11,6 +11,7 @@ import java.net.URLDecoder;
 
 @WebServlet(name = "InsertFileJSON", urlPatterns = {
         "/insertCover/*",
+        "/insertAvatar/*",
 })
 
 public class InsertFileJSON extends HttpServlet {

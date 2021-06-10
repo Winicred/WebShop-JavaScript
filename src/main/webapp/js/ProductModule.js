@@ -14,7 +14,7 @@ class ProductModule {
             console.log("Info: " + result.info);
             await printProductModule.printListProducts();
         } else {
-            console.log("Ошибка получения данных.");
+            console.log("INFO: Ошибка сервера.");
         }
     }
 
@@ -33,7 +33,7 @@ class ProductModule {
             console.log("Info: " + result.info);
             await printProductModule.printAddProduct();
         } else {
-            console.log("Ошибка получения данных.");
+            console.log("INFO: Ошибка сервера.");
         }
     }
 
@@ -49,7 +49,7 @@ class ProductModule {
             console.log("Request status: " + result.requestStatus);
             await printProductModule.printAddProduct();
         } else {
-            console.log("Ошибка получения данных.");
+            console.log("INFO: Ошибка сервера.");
         }
     }
 
@@ -61,23 +61,20 @@ class ProductModule {
         if (response.ok) {
             return await response.json();
         } else {
-            console.log("Ошибка сервера");
+            console.log("INFO: Ошибка сервера.");
             return null;
         }
     }
 
     async loadListProducts() {
         let response = await fetch("listProductsJSON", {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json; charset=utf8"
-            }
-        })
+            method: "GET"
+        });
 
         if (response.ok) {
             return await response.json();
         } else {
-            console.log("INFO: Ошибка сервера.")
+            console.log("INFO: Ошибка сервера.");
             return null;
         }
     }
@@ -189,23 +186,102 @@ class ProductModule {
         });
     }
 
-    async buyProduct() {
-        let productId = document.getElementById("productId");
-        const buyProduct = {
+    async buyProduct(productId) {
+        let data = {
             "productId": productId
         };
 
         let response = await fetch("buyProductJSON", {
             method: "POST",
-            body: JSON.stringify(buyProduct)
+            body: JSON.stringify(data)
         });
 
         if (response.ok) {
             const result = await response.json();
             await printProductModule.printListProducts();
+            document.getElementById("content").innerHTML = "";
             document.getElementById("info").innerHTML = result.info;
         } else {
-            console.log("Ошибка сервера");
+            console.log("INFO: Ошибка сервера.");
+        }
+    }
+
+    async addProductToBag(productId) {
+        let cartList = JSON.parse(sessionStorage.getItem("cartList"));
+
+        let data = {
+            "productId": productId
+        };
+
+        let response = await fetch("addProductToBag", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            let result = await response.json();
+
+            cartList.push(result.product);
+
+            sessionStorage.setItem("cartList", JSON.stringify(cartList));
+            document.getElementById("info").innerHTML = result.info;
+        } else {
+            console.log("INFO: Ошибка сервера.");
+        }
+    }
+
+    async deleteProductFromCart(productId) {
+        let cartList = JSON.parse(sessionStorage.getItem("cartList"));
+
+        let data = {
+            "productId": productId
+        };
+
+        let response = await fetch("deleteProductFromCartJSON", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            let result = await response.json();
+
+            console.log(cartList)
+
+            cartList.pop(result.product);
+
+            console.log(cartList)
+
+            sessionStorage.setItem("cartList", JSON.stringify(cartList));
+            document.getElementById("info").innerHTML = result.info;
+        } else {
+            console.log("INFO: Ошибка сервера.");
+            return null;
+        }
+    }
+
+    async loadBoughtProducts() {
+        let response = await fetch("listBoughtProductsJSON", {
+            method: "GET"
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.log("INFO: Ошибка сервера.");
+            return null;
+        }
+    }
+
+    async loadListPromoCodes() {
+        let response = await fetch("listPromoCodesJSON", {
+            method: "GET"
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.log("INFO: Ошибка сервера.");
+            return null;
         }
     }
 }

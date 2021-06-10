@@ -29,8 +29,6 @@ class UserModule {
             const result = await response.json();
             document.getElementById("info").innerHTML = result.info;
             console.log("Request status: " + result.requestStatus);
-            console.log("Login: " + login)
-            console.log("Password: " + password)
             printAuthModule.printLogin();
         } else {
             console.log("Ошибка получения данных.");
@@ -42,11 +40,9 @@ class UserModule {
             method: 'GET',
         })
         if (response.ok) {
-            let result = await response.json();
-            console.log('listUsers: ' + result.listUsers.length);
-            return result;
+            return await response.json();
         } else {
-            document.getElementById('info').innerHTML = "Ошибка сервера";
+            console.log("INFO: Ошибка сервера.");
             return null;
         }
     }

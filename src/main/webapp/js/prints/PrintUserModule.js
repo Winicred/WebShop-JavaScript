@@ -7,7 +7,6 @@ class PrintUserModule {
             "content"
         ).innerHTML = `<div class="w-50 mx-auto">
         <p class="fw-bold text-muted text-center mt-5">Логин и пароль</p>
-        <form id="registrationForm" method="POST" enctype="multipart/form-data">
             <div class="input-group flex-nowrap w-50 my-3 mx-auto">
                 <span class="input-group-text">
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
@@ -84,10 +83,9 @@ class PrintUserModule {
                     <input class="btn btn-primary mx-auto w-100" type="submit" id="submitButton" value="Зарегистрироваться">
                 </div>
             </div>
-        </form>
     </div>`;
         document.getElementById("info").innerHTML = "";
-        document.getElementById("registrationForm").onsubmit = function (e) {
+        document.getElementById("submitButton").onclick = function (e) {
             e.preventDefault();
             userModule.registration();
         }

@@ -1,9 +1,11 @@
 package JSONServlets;
 
 import JSONBuilder.JSONCategoryBuilder;
+import JSONBuilder.JSONHistoryBuilder;
 import JSONBuilder.JSONProductBuilder;
 import entity.Category;
 import entity.Cover;
+import entity.History;
 import entity.Product;
 import jakarta.ejb.EJB;
 import jakarta.json.Json;
@@ -19,6 +21,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.Part;
 import session.CategoryFacade;
 import session.CoverFacade;
+import session.HistoryFacade;
 import session.ProductFacade;
 
 import java.io.File;
@@ -39,6 +42,7 @@ import java.util.stream.Collectors;
         "/createCategoryJSON",
         "/removeCategoryJSON",
         "/listCategoriesJSON",
+        "/listBoughtProductsJSON",
 })
 public class ManagerServletJSON extends HttpServlet {
     public static final ResourceBundle pathToFile = ResourceBundle.getBundle("property.pathToFile");
@@ -49,6 +53,8 @@ public class ManagerServletJSON extends HttpServlet {
     private ProductFacade productFacade;
     @EJB
     private CategoryFacade categoryFacade;
+    @EJB
+    private HistoryFacade historyFacade;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -152,7 +158,7 @@ public class ManagerServletJSON extends HttpServlet {
                 String guarantee = request.getParameter("guarantee");
                 String price = request.getParameter("price");
                 String count = request.getParameter("count");
-                String categoryId = "1";
+                String categoryId = request.getParameter("categoryId");
 
                 Category category = categoryFacade.find(Long.parseLong(categoryId));
 
@@ -160,6 +166,7 @@ public class ManagerServletJSON extends HttpServlet {
                 productFacade.create(product);
                 JSONProductBuilder jsonProductBuilder = new JSONProductBuilder();
                 JsonObject jsonProduct = jsonProductBuilder.createJSONProduct(product);
+
                 json = job.add("requestStatus", true)
                         .add("info", "Товар " + '"' + product.getBrand() + " " + product.getSeries() + " " + product.getModel() + '"' + " добавлен.")
                         .add("product", jsonProduct.toString())
@@ -204,6 +211,21 @@ public class ManagerServletJSON extends HttpServlet {
                 });
 
                 json = jsonArrayBuilder.build().toString();
+                break;
+
+            case "/listBoughtProductsJSON":
+                List<History> listBoughtProducts = historyFacade.findAll();
+
+                JsonArrayBuilder historyJsonArrayBuilder = Json.createArrayBuilder();
+                listBoughtProducts.forEach(history -> {
+                    historyJsonArrayBuilder.add(new JSONHistoryBuilder().createJSONHistory(history));
+                });
+
+                json = job.add("requestStatus", true)
+                        .add("info", "Список проданных товаров")
+                        .add("listBoughtProducts", historyJsonArrayBuilder.build())
+                        .build()
+                        .toString();
                 break;
         }
 

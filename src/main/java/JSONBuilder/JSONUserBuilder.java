@@ -7,10 +7,12 @@ import jakarta.json.JsonObjectBuilder;
 
 public class JSONUserBuilder {
     public JsonObject createJSONUser(User user) {
-        JsonObjectBuilder job = Json.createObjectBuilder();
-        job.add("id", user.getId())
+        JsonObjectBuilder jsonObjectBuilder = Json.createObjectBuilder();
+        jsonObjectBuilder.add("id", user.getId())
                 .add("login", user.getLogin())
-                .add("buyer", new JSONBuyerBuilder().createJsonBuyer(user.getBuyer()));
-        return job.build();
+                .add("userStatus", user.getUserStatus())
+                .add("buyer", new JSONBuyerBuilder().createJSONBuyer(user.getBuyer()));
+
+        return jsonObjectBuilder.build();
     }
 }

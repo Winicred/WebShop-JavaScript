@@ -46,18 +46,20 @@ public class UserRolesFacade extends AbstractFacade<UserRoles> {
         List<UserRoles> listUserRoles = entityManager.createQuery("SELECT userRoles FROM UserRoles userRoles WHERE userRoles.user = :user")
                 .setParameter("user", user)
                 .getResultList();
-        for (int i = 0; i < listUserRoles.size(); i++) {
-            if ("ADMIN".equals(listUserRoles.get(i).getRole().getRoleName())) {
+        for (UserRoles listUserRole : listUserRoles) {
+            if ("ADMIN".equals(listUserRole.getRole().getRoleName())) {
                 return "ADMIN";
             }
         }
-        for (int i = 0; i < listUserRoles.size(); i++) {
-            if ("MANAGER".equals(listUserRoles.get(i).getRole().getRoleName())) {
+
+        for (UserRoles listUserRole : listUserRoles) {
+            if ("MANAGER".equals(listUserRole.getRole().getRoleName())) {
                 return "MANAGER";
             }
         }
-        for (int i = 0; i < listUserRoles.size(); i++) {
-            if ("BUYER".equals(listUserRoles.get(i).getRole().getRoleName())) {
+        for
+        (UserRoles listUserRole : listUserRoles) {
+            if ("BUYER".equals(listUserRole.getRole().getRoleName())) {
                 return "BUYER";
             }
         }

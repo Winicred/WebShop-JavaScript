@@ -1,29 +1,39 @@
 package JSONServlets;
 
+import JSONBuilder.JSONBuyerBuilder;
 import JSONBuilder.JSONProductBuilder;
-import entity.Buyer;
-import entity.Product;
-import entity.Role;
-import entity.User;
+import JSONBuilder.JSONUserBuilder;
+import entity.*;
 import jakarta.ejb.EJB;
 import jakarta.json.*;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.HttpServlet;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import jakarta.servlet.http.*;
 import session.*;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 @WebServlet(name = "LoginServletJSON", urlPatterns = {
         "/createUserJSON",
@@ -44,6 +54,8 @@ public class LoginServletJSON extends HttpServlet {
     private UserRolesFacade userRolesFacade;
     @EJB
     private RoleFacade roleFacade;
+    @EJB
+    private AvatarFacade avatarFacade;
 
     public static String createSalt() {
         try {
@@ -71,11 +83,25 @@ public class LoginServletJSON extends HttpServlet {
 
     @Override
     public void init() {
-        if (roleFacade.findAll().size() > 0) return;
+        if (userFacade.findAll().size() > 0) return;
+        String salt = LoginServletJSON.createSalt();
+        String adminEncryptedPassword = LoginServletJSON.createHash("admin", salt);
+
+        Buyer buyer = new Buyer("PUPILNAME", "PUPILLASTNAME", 100000.0, "PUPIL@ivkhk.ee", "PUPIL TOWN", "1234 5678", "PUPIL DESCRIPTION", "14.12.2000", "PUPIL EMLOYEE", "IVKHK", "PUPIL ADDRESS", "kutsehariduskeskus.ee", "PUPILGITHUB", "PUPILTWITTER", "PUPILINSTAGRAM", "PUPILFACEBOOK", "PUPILVK", "PUPILTELEGRAM", null);
+        buyerFacade.create(buyer);
+
+        User user = new User("admin", adminEncryptedPassword, salt, "confirmed", buyer);
+        userFacade.create(user);
+
         Role role = new Role("ADMIN");
         roleFacade.create(role);
+
+        UserRoles userRoles = new UserRoles(user, role);
+        userRolesFacade.create(userRoles);
+
         role = new Role("MANAGER");
         roleFacade.create(role);
+
         role = new Role("BUYER");
         roleFacade.create(role);
     }
@@ -87,6 +113,7 @@ public class LoginServletJSON extends HttpServlet {
         String json = "";
         JsonReader jsonReader = Json.createReader(request.getReader());
         JsonObjectBuilder job = Json.createObjectBuilder();
+
         String path = request.getServletPath();
         switch (path) {
             case "/createUserJSON":
@@ -120,6 +147,7 @@ public class LoginServletJSON extends HttpServlet {
                     userRolesFacade.setRole("BUYER", user);
                     HttpSession httpSession = request.getSession(true);
                     httpSession.setAttribute("user", user);
+
                     json = job.add("requestStatus", "true")
                             .add("info", "Пользователь " + '"' + user.getLogin() + '"' + " зарегестрирован.")
                             .add("token", httpSession.getId())
@@ -130,6 +158,8 @@ public class LoginServletJSON extends HttpServlet {
                 break;
 
             case "/loginJSON":
+                List<Product> cartList = new ArrayList<>();
+
                 jsonObject = jsonReader.readObject();
                 login = jsonObject.getString("login", "");
                 password = jsonObject.getString("password", "");
@@ -154,10 +184,19 @@ public class LoginServletJSON extends HttpServlet {
 
                 HttpSession httpSession = request.getSession(true);
                 httpSession.setAttribute("user", loginUser);
+                httpSession.setAttribute("cartList", cartList);
+
+                Buyer currentBuyer = buyerFacade.find(loginUser.getBuyer().getId());
+
+
                 json = job.add("requestStatus", true)
                         .add("info", "Вы вошли как " + '"' + loginUser.getLogin() + '"' + ".")
                         .add("token", httpSession.getId())
                         .add("role", userRolesFacade.getTopRoleForUser(loginUser))
+                        .add("cartList", new ArrayList<>().toString())
+                        .add("buyer", new JSONBuyerBuilder().createJSONBuyer(currentBuyer))
+                        .add("user", new JSONUserBuilder().createJSONUser(loginUser))
+                        .add("userId", loginUser.getId())
                         .build()
                         .toString();
                 break;

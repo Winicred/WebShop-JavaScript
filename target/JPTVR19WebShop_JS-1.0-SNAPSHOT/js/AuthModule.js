@@ -2,6 +2,7 @@ import {printProductModule} from "./prints/PrintProductModule.js";
 
 class AuthModule {
     async login() {
+        let cartList = [];
         document.getElementById("info").innerHTML = "";
 
         const login = document.getElementById("userLogin").value;
@@ -19,22 +20,30 @@ class AuthModule {
         if (response.ok) {
             const result = await response.json();
             document.getElementById("info").innerHTML = result.info;
-            console.log("Request status: " + result.requestStatus);
             document.getElementById("content").innerHTML = "";
             if (result.requestStatus) {
                 sessionStorage.setItem("token", JSON.stringify(result.token));
                 sessionStorage.setItem("role", JSON.stringify(result.role));
+                sessionStorage.setItem("cartList", JSON.stringify(result.cartList));
+                sessionStorage.setItem("buyer", JSON.stringify(result.buyer));
+                sessionStorage.setItem("user", JSON.stringify(result.user));
+                sessionStorage.setItem("userId", JSON.stringify(result.userId));
+                sessionStorage.setItem("cartList", JSON.stringify(cartList));
             } else {
                 if (sessionStorage.getItem(token) !== null) {
                     sessionStorage.removeItem("token");
                     sessionStorage.removeItem("role");
+                    sessionStorage.removeItem("cartList");
+                    sessionStorage.removeItem("buyer");
+                    sessionStorage.removeItem("user");
+                    sessionStorage.removeItem("userId");
+                    sessionStorage.removeItem("cartListJS");
                 }
             }
         } else {
             console.log("Ошибка получения данных");
         }
         this.toggleMenu();
-
     }
 
     async logout() {
@@ -54,14 +63,21 @@ class AuthModule {
             console.log(result.info);
             sessionStorage.removeItem("token");
             sessionStorage.removeItem("role");
+            sessionStorage.removeItem("cartList");
+            sessionStorage.removeItem("buyer");
+            sessionStorage.removeItem("user");
+            sessionStorage.removeItem("userId");
             document.getElementById("info").innerHTML = "";
-            printProductModule.printListProducts();
+            await printProductModule.printListProducts();
         }
         authModule.toggleMenu();
     }
 
     toggleMenu() {
         let role = null;
+        let buyer = JSON.parse(sessionStorage.getItem("buyer"));
+        let user = JSON.parse(sessionStorage.getItem("user"));
+
         if (sessionStorage.getItem("role") !== null) {
             role = JSON.parse(sessionStorage.getItem("role"));
         }
@@ -124,6 +140,16 @@ class AuthModule {
                 document.getElementById("registrationLink").style.display = "none";
                 document.getElementById("emptyUserContainer").style.display = "none";
                 break;
+        }
+
+        document.getElementById("loginedUserAs").innerHTML = user.login;
+        document.getElementById("loginedBuyerId").innerHTML = "ID: " + buyer.id;
+
+        let userBalance = document.getElementById("userBalance");
+        if (buyer.money === "null") {
+            userBalance.innerHTML = 0 + "€";
+        } else {
+            userBalance.innerHTML = (Math.trunc(user.buyer.money * 100) / 100) + "€";
         }
     }
 }

@@ -3,6 +3,7 @@ import {printAdminModule} from "./prints/PrintAdminModule.js";
 import {authModule} from "./AuthModule.js";
 import {printUserModule} from "./prints/PrintUserModule.js";
 import {printAuthModule} from "./prints/PrintAuthModule.js";
+import {printBuyerModule} from "./prints/printBuyerModule.js";
 
 document.getElementById("addProduct").onclick = function () {
     document.getElementById("info").innerHTML = "";
@@ -19,6 +20,7 @@ document.getElementById("listProducts").onclick = function () {
 document.getElementById("showBoughtProducts").onclick = function () {
     document.getElementById("info").innerHTML = "";
     toggleMenuActive("showBoughtProducts");
+    printAdminModule.printShowBoughtProducts();
 };
 
 document.getElementById("discountForm").onclick = function () {
@@ -35,8 +37,8 @@ document.getElementById("listBuyers").onclick = function () {
 
 document.getElementById("buyProduct").onclick = function () {
     document.getElementById("info").innerHTML = "";
-    toggleMenuActive("buyProduct");
-    printProductModule.printBuyProduct();
+    toggleMenuActive("listProducts");
+    printProductModule.printListProducts();
 };
 
 document.getElementById("login").onclick = function () {
@@ -61,6 +63,21 @@ document.getElementById("adminPanel").onclick = function () {
     document.getElementById("info").innerHTML = "";
     toggleMenuActive("adminPanel");
     printAdminModule.printAdminPanel();
+};
+
+//
+document.getElementById("buyerProfile").onclick = function () {
+    document.getElementById("info").innerHTML = "";
+    printBuyerModule.printBuyerProfile();
+};
+
+document.getElementById("buyerProfileSetting").onclick = function () {
+    document.getElementById("info").innerHTML = "";
+    printBuyerModule.printBuyerProfileSetting();
+};
+
+document.getElementById("myCartList").onclick = function () {
+    printBuyerModule.printCartList();
 };
 
 authModule.toggleMenu();
