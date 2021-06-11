@@ -681,9 +681,10 @@ class PrintBuyerModule {
     }
 
     async printCartList() {
-        document.getElementById("info").innerHTML = "";
         document.getElementById("content").innerHTML = "";
         let cartList = JSON.parse(sessionStorage.getItem("cartList"));
+        let promoCodeUsed = sessionStorage.getItem("promoCodeUsed");
+        let promoCodeName = sessionStorage.getItem("promoCodeName");
 
         let productCount = cartList.length;
 
@@ -709,6 +710,7 @@ class PrintBuyerModule {
             let totalPriceDiv = document.createElement("div")
 
             for (let product of cartList) {
+
                 let cart = document.createElement("div");
                 let cart1 = document.createElement("div");
 
@@ -753,8 +755,9 @@ class PrintBuyerModule {
                             Удалить
                         </a>
                     `;
+
                 deleteProductSpan.onclick = function () {
-                    productModule.deleteProductFromCart(product.id);
+                    productModule.deleteProductFromCart(cartList.indexOf(product) + 1);
                 };
 
                 let productPriceDiv = document.createElement("div");
@@ -899,6 +902,18 @@ class PrintBuyerModule {
                 divsForList.insertAdjacentElement("beforeEnd", cart);
             }
 
+            let productSum = 0;
+            let totalProductSum = 0;
+
+            let approxDate = await productModule.loadApproxDate();
+
+            for (let i = 0; i < cartList.length; i++) {
+                productSum += cartList[i].price;
+                productSum = Math.trunc(productSum * 100) / 100;
+                totalProductSum += (productSum + (productSum * 0.2)) + 5;
+                totalProductSum = Math.trunc(totalProductSum * 100) / 100;
+            }
+
             totalPriceDiv.innerHTML =
                 `
                 <div class="col-md-12 col-lg-4 col-11 mt-lg-0 mt-md-5 w-100">
@@ -907,7 +922,7 @@ class PrintBuyerModule {
                         <div class="price_indiv d-flex justify-content-between">
                             <p>Цена товара(ов)</p>
                             <p>
-                                <span>asdasd</span>€
+                                <span>${productSum}</span>€
                             </p>
                         </div>
                         <div class="price_indiv d-flex justify-content-between">
@@ -920,30 +935,27 @@ class PrintBuyerModule {
                         </div>
                         <hr/>
                         <div class="total-amt d-flex justify-content-between font-weight-bold" style="color: #1c7430">
-                            <p>Промо-код (35235%) </p>
+                            <p>Промо-код (123%) </p>
                             <p>asd</p>
                         </div>
                         <div class="total-amt d-flex justify-content-between font-weight-bold">
                             <p>Общая сумма (с учетом НДС) </p>
-                            <p><span>asd</span>€</p>
+                            <p><span>${totalProductSum}</span>€</p>
                         </div>
-                        <a href="#paymentForm?userId"
+                        <a href="#paymentForm"
                            class="btn btn-primary text-uppercase">Оплатить</a>
                     </div>
 
                     <div class="mt-3 shadow">
                         <div class="card">
                             <div class="card-body">
-                                <form action="#usePromoCode" method="get">
-                                    <span>Введите промо-код (необязательно)</span>
+                                <span>Введите промо-код (необязательно)</span>
+                                <form id="usePromoCodeForm">
                                     <div class="mt-2">
-                                        <input type="text" name="promoCodeName" id="promoCodeName"
-                                               class="form-control font-weight-bold"
-                                               value="asd"
-                                               placeholder="Введите промо-код"
-                                               >
+                                        <input type="text" id="promoCodeName" placeholder="Введите промо-код"
+                                               class="form-control font-weight-bold">
                                     </div>
-                                    <input class="btn btn-primary btn-sm mt-2" value="Применить" type="submit">
+                                    <input class="btn btn-primary btn-sm mt-2" id="usePromoCodeButton" type="submit" value="Применить">
                                 </form>
                             </div>
                         </div>
@@ -952,7 +964,7 @@ class PrintBuyerModule {
                     <div class="mt-3 shadow p-3 bg-white">
                         <div class="pt-4">
                             <h5 class="mb-4">Примерная дата доставки</h5>
-                            <p>$ - $</p>
+                            <p>${approxDate.beforeDate} - ${approxDate.afterDate}</p>
                         </div>
                     </div>
                 </div>
@@ -970,6 +982,18 @@ class PrintBuyerModule {
             divForAll2.appendChild(totalPriceDiv);
 
             content.insertAdjacentElement("beforeEnd", divForAll)
+
+            document.getElementById("usePromoCodeForm").onsubmit = function () {
+                productModule.usePromoCode()
+            };
+
+            console.log(promoCodeUsed)
+
+            if (promoCodeUsed === "true") {
+                document.getElementById("promoCodeName").disabled = true;
+                document.getElementById("promoCodeName").value = promoCodeName;
+                document.getElementById("usePromoCodeButton").disabled = true;
+            }
 
         } else {
             document.getElementById("content").innerHTML =

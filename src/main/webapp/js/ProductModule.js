@@ -1,4 +1,5 @@
 import {printProductModule} from "./prints/PrintProductModule.js";
+import {printBuyerModule} from "./prints/printBuyerModule.js";
 
 class ProductModule {
     async addProduct() {
@@ -230,11 +231,13 @@ class ProductModule {
         }
     }
 
-    async deleteProductFromCart(productId) {
+    async deleteProductFromCart(index) {
         let cartList = JSON.parse(sessionStorage.getItem("cartList"));
 
+        console.log(index)
+
         let data = {
-            "productId": productId
+            "index": index
         };
 
         let response = await fetch("deleteProductFromCartJSON", {
@@ -245,14 +248,11 @@ class ProductModule {
         if (response.ok) {
             let result = await response.json();
 
-            cartList.pop(result.product);
-
-            console.log(result.product)
-            console.log("")
-            console.log(cartList)
+            cartList.splice(index - 1, 1);
 
             sessionStorage.setItem("cartList", JSON.stringify(cartList));
             document.getElementById("info").innerHTML = result.info;
+            await printBuyerModule.printCartList();
         } else {
             console.log("INFO: Ошибка сервера.");
             return null;
@@ -279,6 +279,46 @@ class ProductModule {
 
         if (response.ok) {
             return await response.json();
+        } else {
+            console.log("INFO: Ошибка сервера.");
+            return null;
+        }
+    }
+
+    async loadApproxDate() {
+        let response = await fetch("loadApproxDateJSON", {
+            method: "GET"
+        });
+
+        if (response.ok) {
+            return await response.json();
+        } else {
+            console.log("INFO: Ошибка сервера.");
+            return null;
+        }
+    }
+
+    async usePromoCode() {
+        let promoCodeName = document.getElementById("promoCodeName").value;
+
+        let data = {
+            "promoCodeName": promoCodeName
+        };
+
+        let response = await fetch("usePromoCodeJSON", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            let result = await response.json();
+
+            sessionStorage.setItem("promoCodeName", result.promoCodeName);
+            sessionStorage.setItem("promoCodeUsed", result.promoCodeUsed);
+
+            document.getElementById("info").innerHTML = result.info;
+
+            await printBuyerModule.printCartList();
         } else {
             console.log("INFO: Ошибка сервера.");
             return null;

@@ -29,6 +29,8 @@ class AuthModule {
                 sessionStorage.setItem("user", JSON.stringify(result.user));
                 sessionStorage.setItem("userId", JSON.stringify(result.userId));
                 sessionStorage.setItem("cartList", JSON.stringify(cartList));
+                sessionStorage.setItem("promoCodeName", result.promoCodeName);
+                sessionStorage.setItem("promoCodeUsed", result.promoCodeUsed);
             } else {
                 if (sessionStorage.getItem(token) !== null) {
                     sessionStorage.removeItem("token");
@@ -38,6 +40,8 @@ class AuthModule {
                     sessionStorage.removeItem("user");
                     sessionStorage.removeItem("userId");
                     sessionStorage.removeItem("cartListJS");
+                    sessionStorage.removeItem("promoCodeName");
+                    sessionStorage.removeItem("promoCodeUsed");
                 }
             }
         } else {

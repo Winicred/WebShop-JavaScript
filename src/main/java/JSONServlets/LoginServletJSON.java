@@ -6,34 +6,24 @@ import JSONBuilder.JSONUserBuilder;
 import entity.*;
 import jakarta.ejb.EJB;
 import jakarta.json.*;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
-import jakarta.servlet.http.*;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import session.*;
 
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.PrintWriter;
 import java.math.BigInteger;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.Buffer;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 @WebServlet(name = "LoginServletJSON", urlPatterns = {
         "/createUserJSON",
@@ -147,6 +137,7 @@ public class LoginServletJSON extends HttpServlet {
                     userRolesFacade.setRole("BUYER", user);
                     HttpSession httpSession = request.getSession(true);
                     httpSession.setAttribute("user", user);
+                    httpSession.setAttribute("promoCodeUsed", false);
 
                     json = job.add("requestStatus", "true")
                             .add("info", "Пользователь " + '"' + user.getLogin() + '"' + " зарегестрирован.")
@@ -188,6 +179,7 @@ public class LoginServletJSON extends HttpServlet {
 
                 Buyer currentBuyer = buyerFacade.find(loginUser.getBuyer().getId());
 
+                String promoCodeName = "";
 
                 json = job.add("requestStatus", true)
                         .add("info", "Вы вошли как " + '"' + loginUser.getLogin() + '"' + ".")
@@ -197,6 +189,8 @@ public class LoginServletJSON extends HttpServlet {
                         .add("buyer", new JSONBuyerBuilder().createJSONBuyer(currentBuyer))
                         .add("user", new JSONUserBuilder().createJSONUser(loginUser))
                         .add("userId", loginUser.getId())
+                        .add("promoCodeName", promoCodeName)
+                        .add("promoCodeUsed", false)
                         .build()
                         .toString();
                 break;

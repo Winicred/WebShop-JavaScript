@@ -77,6 +77,7 @@ document.getElementById("buyerProfileSetting").onclick = function () {
 };
 
 document.getElementById("myCartList").onclick = function () {
+    document.getElementById("info").innerHTML = "";
     printBuyerModule.printCartList();
 };
 

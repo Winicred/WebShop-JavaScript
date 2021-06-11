@@ -2,10 +2,8 @@ package JSONServlets;
 
 import JSONBuilder.JSONBuyerBuilder;
 import JSONBuilder.JSONProductBuilder;
-import entity.Buyer;
-import entity.History;
-import entity.Product;
-import entity.User;
+import JSONBuilder.JSONPromoCodeBuilder;
+import entity.*;
 import jakarta.ejb.EJB;
 import jakarta.json.*;
 import jakarta.servlet.annotation.WebServlet;
@@ -17,8 +15,9 @@ import session.*;
 
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.GregorianCalendar;
-import java.util.List;
+import java.text.DateFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @WebServlet(name = "BuyerServletJSON", urlPatterns = {
         "/buyProductJSON",
@@ -26,6 +25,8 @@ import java.util.List;
         "/addProductToBag",
         "/deleteProductFromCartJSON",
         "/editBuyerProfileJSON",
+        "/loadApproxDateJSON",
+        "/usePromoCodeJSON",
 })
 
 public class BuyerServletJSON extends HttpServlet {
@@ -42,6 +43,8 @@ public class BuyerServletJSON extends HttpServlet {
     private RoleFacade roleFacade;
     @EJB
     private HistoryFacade historyFacade;
+    @EJB
+    private PromoCodeFacade promoCodeFacade;
 
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
@@ -124,7 +127,7 @@ public class BuyerServletJSON extends HttpServlet {
             case "/deleteProductFromCartJSON":
                 jsonObject = jsonReader.readObject();
 
-                productId = jsonObject.getInt("productId");
+                productId = jsonObject.getInt("index");
                 product = productFacade.find(productId);
 
                 cartList.remove(product);
@@ -199,6 +202,53 @@ public class BuyerServletJSON extends HttpServlet {
 
                 json = job.add("requestStatus", true)
                         .add("info", "Данные пользователя " + '"' + buyer.getName() + " " + buyer.getLastname() + '"' + " изменены.")
+                        .build()
+                        .toString();
+                break;
+
+            case "/loadApproxDateJSON":
+                DateFormatSymbols sym = DateFormatSymbols.getInstance(new Locale("ru", "ru"));
+                sym.setMonths(new String[]{"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"});
+                SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
+                sdf.setDateFormatSymbols(sym);
+                Calendar c = Calendar.getInstance();
+                c.setTime(new Date());
+                c.add(Calendar.DATE, 3);
+                String before = sdf.format(c.getTime());
+                c.add(Calendar.DATE, 7);
+                String after = sdf.format(c.getTime());
+
+                json = job.add("requestStatus", true)
+                        .add("beforeDate", before)
+                        .add("afterDate", after)
+                        .build()
+                        .toString();
+                break;
+
+            case "/usePromoCodeJSON":
+                jsonObject = jsonReader.readObject();
+
+                String promoCodeName = jsonObject.getString("promoCodeName");
+
+                PromoCode usedPromoCode = promoCodeFacade.findPromoCodeName(promoCodeName);
+                try {
+                    if (promoCodeName.equals(usedPromoCode.getPromoCodeName())) {
+                        httpSession.setAttribute("promoCode", usedPromoCode);
+                        httpSession.setAttribute("promoCodeUsed", true);
+                    }
+                } catch (NullPointerException e) {
+                    json = job.add("requestStatus", true)
+                            .add("info", "Такого промо-кода не существует!")
+                            .build()
+                            .toString();
+                    break;
+                }
+
+                json = job.add("requestStatus", true)
+                        .add("info", "Вы успешно применили промо-код!")
+                        .add("promoCode", new JSONPromoCodeBuilder().createJSONPromoCode(usedPromoCode))
+                        .add("promoCodeUsed", true)
+                        .add("promoCodeName", promoCodeName)
                         .build()
                         .toString();
                 break;
