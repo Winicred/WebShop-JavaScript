@@ -137,6 +137,7 @@ public class AdminServletJSON extends HttpServlet {
 
                 json = job.add("requestStatus", false)
                         .add("info", "Пользователь " + unconfirmedUser.getBuyer().getName() + " " + unconfirmedUser.getBuyer().getLastname() + " подтверждён.")
+                        .add("user", new JSONUserBuilder().createJSONUser(unconfirmedUser))
                         .build()
                         .toString();
                 break;

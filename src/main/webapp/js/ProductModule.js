@@ -245,10 +245,10 @@ class ProductModule {
         if (response.ok) {
             let result = await response.json();
 
-            console.log(cartList)
-
             cartList.pop(result.product);
 
+            console.log(result.product)
+            console.log("")
             console.log(cartList)
 
             sessionStorage.setItem("cartList", JSON.stringify(cartList));

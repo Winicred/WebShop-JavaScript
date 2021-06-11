@@ -710,6 +710,23 @@ class PrintBuyerModule {
 
             for (let product of cartList) {
                 let cart = document.createElement("div");
+                let cart1 = document.createElement("div");
+
+                cart.classList.add("card", "p-4");
+                cart1.classList.add("row", "d-flex", "flex-nowrap");
+
+                let pictureDiv = document.createElement("div");
+                let descriptionDiv = document.createElement("div");
+                let descriptionDiv1 = document.createElement("div");
+
+                pictureDiv.classList.add("col-md-5", "col-11", "bg-light", "shadow", "w-25", "d-flex", "justify-content-center");
+
+                let img = document.createElement('img');
+                img.classList.add('card-img-top');
+                img.style.cssText = `max-width: 9rem; max-height: 12rem`;
+                img.setAttribute('src', `insertCover/${product.cover.path}`);
+
+                pictureDiv.appendChild(img);
 
                 divForAll5.classList.add("container-fluid");
                 divForAll4.classList.add("row");
@@ -718,55 +735,50 @@ class PrintBuyerModule {
                 divForAll1.classList.add("col-md-12", "col-lg-8", "col-11", "main_cart", "mb-lg-0", "mb-5", "shadow", "d-flex", "flex-column", "w-75");
                 divForAll.classList.add("d-flex", "mb-5");
 
-                cart.insertAdjacentHTML('beforeEnd',
+                let deleteProductDiv = document.createElement("div");
+                deleteProductDiv.classList.add("row", "d-flex", "justify-content-between", "p-4");
+
+                let deleteProductSpan = document.createElement("div");
+                deleteProductSpan.classList.add("col-8", "mt-4")
+                deleteProductSpan.innerHTML =
                     `
-                <div class="d-flex flex-column w-100">
-                    <div class="card p-4">
-                        <div class="row">
-                            <div class="col-md-5 col-11 bg-light shadow w-25 d-flex justify-content-center"
-                                 style="padding: 1rem">
-                                 <img src="insertCover/${product.cover.path}" class="card-img-top"
-                                     alt="cart img"
-                                     style="margin: auto auto; max-width: 12rem; max-height: 15rem;">
+                        <a href="#deleteProductFromCart" id="deleteProductFromCart"
+                           style="text-decoration: none; font-weight: 500">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20"
+                                 height="20"
+                                 fill="currentColor" class="bi bi-trash-fill"
+                                 viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
+                            </svg>
+                            Удалить
+                        </a>
+                    `;
+                deleteProductSpan.onclick = function () {
+                    productModule.deleteProductFromCart(product.id);
+                };
 
-                            </div>
+                let productPriceDiv = document.createElement("div");
+                productPriceDiv.classList.add("col-4", "d-flex", "justify-content-end", "mt-4")
+                let productPrice = document.createElement("h4");
+                productPrice.appendChild(document.createTextNode(product.price + "€"))
+                productPriceDiv.appendChild(productPrice)
 
-                            <div class="col-md-7 col-11 mx-auto px-4 mt-2">
-                                <div class="d-flex justify-content-between">
-                                    <div class="w-50">
-                                        <h5>${product.brand} ${product.series} ${product.model}</h5>
-                                        <a class="mb-2 small" data-bs-target="#exampleModal${product.id}" data-bs-toggle="modal" id="viewDetailButton"
-                                           style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis" href="#">Смотреть описание</a>
-                                    </div>
-                                </div>
+                deleteProductDiv.appendChild(deleteProductSpan);
+                deleteProductDiv.appendChild(productPriceDiv);
 
-                                <div class="row">
-                                    <div class="col-8 mt-4">
-                                            <a href="#deleteProductFromCart?productId=${product.id}" id="deleteProductFromCart"
-                                               style="text-decoration: none; font-weight: 500">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="20"
-                                                     height="20"
-                                                     fill="currentColor" class="bi bi-trash-fill"
-                                                     viewBox="0 0 16 16">
-                                                    <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1H2.5zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5zM8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5zm3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0z"></path>
-                                                </svg>
-                                                Удалить
-                                            </a>
-                                    </div>
-
-                                    <div class="col-4 d-flex justify-content-end price_money mt-4">
-                                        <h3 hidden><span id="itemval1"></span></h3>
-                                        <h4>${product.price}€</h4>
-                                    </div>
-                                </div>
+                descriptionDiv1.innerHTML =
+                    `
+                    <div class="col-md-7 col-11 px-4 mt-2 w-100">
+                        <div class="d-flex justify-content-between">
+                            <div class="w-50">
+                                <h5>${product.brand} ${product.series} ${product.model}</h5>
+                                <a class="mb-2 small" data-bs-target="#exampleModal${product.id}" data-bs-toggle="modal" id="viewDetailButton"
+                                   style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis" href="#">Смотреть описание</a>
                             </div>
                         </div>
                     </div>
-                            
-                    <hr>
-                </div>
-
-                <div class="modal fade" id="exampleModal${product.id}" tabindex="-1"
+                    
+                    <div class="modal fade" id="exampleModal${product.id}" tabindex="-1"
                      aria-labelledby="exampleModalLabel"
                      aria-hidden="true">
                     <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
@@ -786,14 +798,14 @@ class PrintBuyerModule {
                                 <p>Серия: <span style="font-weight: bold">${product.series}</span></p>
                                 <p>Модель: <span style="font-weight: bold">${product.model}</span></p>
                                 <p>Цвет: <span style="font-weight: bold">${product.color}</span></p>
-                                <p>Вес: <span style="font-weight: bold">${product.weight}кг</span></p>
-                                <p>Длина: <span style="font-weight: bold">${product.length}мм</span></p>
-                                <p>Ширина: <span style="font-weight: bold">${product.width}мм</span></p>
-                                <p>Высота: <span style="font-weight: bold">${product.height}мм</span></p>
+                                <p>Вес: <span style="font-weight: bold">${product.weight}</span></p>
+                                <p>Длина: <span style="font-weight: bold">${product.length}</span></p>
+                                <p>Ширина: <span style="font-weight: bold">${product.width}</span></p>
+                                <p>Высота: <span style="font-weight: bold">${product.height}</span></p>
 
                                 <hr>
 
-                                <p>Диагональ экрана: <span style="font-weight: bold">${product.screenDiagonal} "</span></p>
+                                <p>Диагональ экрана: <span style="font-weight: bold">${product.screenDiagonal}</span></p>
                                 <p>Разрешение экрана: <span style="font-weight: bold">${product.resolution}</span></p>
                                 <p>Сенсорный экран: <span style="font-weight: bold">${product.touchScreen}</span></p>
 
@@ -806,28 +818,26 @@ class PrintBuyerModule {
                                 <p>Тип процессора: <span style="font-weight: bold">${product.cpuType}</span></p>
                                 <p>Класс процессора: <span style="font-weight: bold">${product.cpuClass}</span></p>
                                 <p>Модель процессора: <span style="font-weight: bold">${product.cpuModel}</span></p>
-                                <p>Частота процессора: <span style="font-weight: bold">${product.cpuFrequency}ГГц</span></p>
+                                <p>Частота процессора: <span style="font-weight: bold">${product.cpuFrequency}</span></p>
 
                                 <hr>
 
-                                <p>Тип оперативной памяти: <span style="font-weight: bold">${product.cpuFrequency}</span>
+                                <p>Тип оперативной памяти: <span style="font-weight: bold">${product.ramType}</span>
                                 </p>
                                 <p>Оперативная память (RAM): <span
-                                        style="font-weight: bold">${product.cpuFrequency}Гб</span>
+                                        style="font-weight: bold">${product.ramSize}</span>
                                 </p>
                                 <p>Частота оперативной памяти: <span
-                                        style="font-weight: bold">${product.cpuFrequency}МГц</span>
+                                        style="font-weight: bold">${product.ramClockSpeed}</span>
                                 </p>
 
                                 <hr>
 
                                 <p>SSD диск: <span style="font-weight: bold">${product.ssd}</span></p>
-                                <p>Объем диска SSD: <span style="font-weight: bold">${product.ssdCapacity}<c:if
-                                        test="${product.ssdCapacity != 'Не указано'}">Гб</c:if></span></p>
+                                <p>Объем диска SSD: <span style="font-weight: bold">${product.ssdCapacity}</span></p>
                                 <p>HDD диск: <span style="font-weight: bold">${product.hdd}</span></p>
-                                <p>Объем диска HDD: <span style="font-weight: bold">${product.hddCapacity}<c:if
-                                        test="${product.hddCapacity != 'Не указано'}">Гб</c:if></span></p>
-                                <p>Общий объём памяти: <span style="font-weight: bold">${product.totalPcMemory}Гб</span></p>
+                                <p>Объем диска HDD: <span style="font-weight: bold">${product.hddCapacity}</span></p>
+                                <p>Общий объём памяти: <span style="font-weight: bold">${product.totalPcMemory}</span></p>
 
                                 <hr>
 
@@ -859,12 +869,12 @@ class PrintBuyerModule {
 
                                 <p>Технология батареи: <span style="font-weight: bold">${product.batteryTechnology}</span>
                                 </p>
-                                <p>Время работы батареи: <span style="font-weight: bold">${product.batteryLife} часов</span>
+                                <p>Время работы батареи: <span style="font-weight: bold">${product.batteryLife}</span>
                                 </p>
 
                                 <hr>
 
-                                <p>Гарантия: <span style="font-weight: bold"> ${product.guarantee}</span></p>
+                                <p>Гарантия: <span style="font-weight: bold"> ${product.guarantee} месяц(ев)</span></p>
                             </div>
                             <div class="modal-footer">
                                 <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Закрыть
@@ -873,13 +883,20 @@ class PrintBuyerModule {
                         </div>
                     </div>
                 </div>
-                `);
-                divsForList.insertAdjacentElement("beforeEnd", cart);
-                
-                document.getElementById("deleteProductFromCart").onclick = function () {
-                    productModule.deleteProductFromCart(product.id);
-                };
+                    `;
 
+                descriptionDiv1.appendChild(deleteProductDiv)
+
+                descriptionDiv.classList.add("flex-shrink-1");
+                descriptionDiv.appendChild(descriptionDiv1);
+
+                cart1.appendChild(pictureDiv);
+                cart1.appendChild(descriptionDiv);
+
+                cart.classList.add("mb-2")
+                cart.appendChild(cart1);
+
+                divsForList.insertAdjacentElement("beforeEnd", cart);
             }
 
             totalPriceDiv.innerHTML =

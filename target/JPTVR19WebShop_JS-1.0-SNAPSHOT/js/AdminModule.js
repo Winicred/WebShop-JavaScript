@@ -20,8 +20,6 @@ class AdminModule {
             "userId": userId
         }
 
-        console.log(userId);
-
         let response = await fetch("confirmUserJSON", {
             method: "POST",
             body: JSON.stringify(data)
@@ -31,7 +29,7 @@ class AdminModule {
             const result = await response.json();
             document.getElementById("content").innerHTML = "";
             document.getElementById("info").innerHTML = result.info;
-            console.log(result);
+            sessionStorage.setItem("user", result.user);
         } else {
             console.log("INFO: Ошибка сервера.");
         }

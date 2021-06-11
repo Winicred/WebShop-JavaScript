@@ -132,7 +132,6 @@ public class BuyerServletJSON extends HttpServlet {
                 httpSession.setAttribute("cartList", cartList);
 
                 json = job.add("requestStatus", true)
-                        .add("info", "Товар " + '"' + product.getBrand() + " " + product.getModel() + " " + product.getSeries() + '"' + " добавлен.")
                         .add("product", new JSONProductBuilder().createJSONProduct(product))
                         .build()
                         .toString();

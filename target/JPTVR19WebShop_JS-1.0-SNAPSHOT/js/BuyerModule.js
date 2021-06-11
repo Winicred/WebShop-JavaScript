@@ -1,19 +1,6 @@
 import {printBuyerModule} from "./prints/printBuyerModule.js";
 
 class BuyerModule {
-    async loadListBuyers() {
-        let response = await fetch("listBuyersJSON", {
-            method: 'GET'
-        })
-
-        if (response.ok) {
-            return await response.json();
-        } else {
-            console.log("INFO: Ошибка сервера.");
-            return null;
-        }
-    }
-
     async editBuyerProfile() {
         let name = document.getElementById("name").value;
         let lastname = document.getElementById("lastname").value;
