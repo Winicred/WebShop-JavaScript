@@ -173,13 +173,17 @@ public class LoginServletJSON extends HttpServlet {
                     break;
                 }
 
-                HttpSession httpSession = request.getSession(true);
-                httpSession.setAttribute("user", loginUser);
-                httpSession.setAttribute("cartList", cartList);
 
                 Buyer currentBuyer = buyerFacade.find(loginUser.getBuyer().getId());
 
                 String promoCodeName = "";
+
+                HttpSession httpSession = request.getSession(true);
+                httpSession.setAttribute("user", loginUser);
+                httpSession.setAttribute("cartList", cartList);
+                httpSession.setAttribute("isPromoCodeUsed", false);
+                httpSession.setAttribute("promoCodeUsed", false);
+                httpSession.setAttribute("promoCodeInput", "");
 
                 json = job.add("requestStatus", true)
                         .add("info", "Вы вошли как " + '"' + loginUser.getLogin() + '"' + ".")
@@ -189,6 +193,8 @@ public class LoginServletJSON extends HttpServlet {
                         .add("buyer", new JSONBuyerBuilder().createJSONBuyer(currentBuyer))
                         .add("user", new JSONUserBuilder().createJSONUser(loginUser))
                         .add("userId", loginUser.getId())
+                        .add("buyerBalance", loginUser.getBuyer().getMoney())
+                        .add("promoCode", "")
                         .add("promoCodeName", promoCodeName)
                         .add("promoCodeUsed", false)
                         .build()

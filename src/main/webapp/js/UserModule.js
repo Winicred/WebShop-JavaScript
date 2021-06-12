@@ -1,4 +1,5 @@
 import {printAuthModule} from "./prints/PrintAuthModule.js";
+import {authModule} from "./AuthModule.js";
 
 class UserModule {
     async registration() {
@@ -27,9 +28,8 @@ class UserModule {
 
         if (response.ok) {
             const result = await response.json();
-            document.getElementById("info").innerHTML = result.info;
-            console.log("Request status: " + result.requestStatus);
             printAuthModule.printLogin();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("Ошибка получения данных.");
         }

@@ -1,4 +1,5 @@
 import {printBuyerModule} from "./prints/printBuyerModule.js";
+import {authModule} from "./AuthModule.js";
 
 class BuyerModule {
     async editBuyerProfile() {
@@ -49,8 +50,8 @@ class BuyerModule {
 
         if (response.ok) {
             let result = await response.json();
-            document.getElementById("info").innerHTML = result.info;
             await printBuyerModule.printBuyerProfile();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
             return null;

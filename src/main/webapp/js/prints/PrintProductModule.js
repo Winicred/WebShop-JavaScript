@@ -543,6 +543,7 @@ class PrintProductModule {
 
     async printListProducts() {
         let listProducts = await productModule.loadListProducts();
+        let promoCode = JSON.parse(JSON.stringify(sessionStorage.getItem("promoCode")));
 
         let content = document.getElementById("content");
         content.innerHTML = '<h2 class="text-center my-4">Список товаров</h2>';
@@ -558,7 +559,7 @@ class PrintProductModule {
                 if (product.count !== 0) {
                     inStock =
                         `
-                        <span>Да</span>
+                        <span>Есть в наличии</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                              style="fill: #32CD32; margin-top: 6px"
                              class="bi bi-check-circle-fill" viewBox="0 0 24 24">
@@ -568,7 +569,7 @@ class PrintProductModule {
                 } else {
                     inStock =
                         `
-                        <span>Нет</span>
+                        <span>Нет в наличии</span>
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor"
                              class="bi bi-clock-fill" viewBox="0 0 24 24" style="fill: red; margin-top: 6px">
                             <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM8 3.5a.5.5 0 0 0-1 0V9a.5.5 0 0 0 .252.434l3.5 2a.5.5 0 0 0 .496-.868L8 8.71V3.5z"></path>
@@ -583,7 +584,7 @@ class PrintProductModule {
 
                 let img = document.createElement('img');
                 img.classList.add('card-img-top');
-                img.style.cssText = `max-width: 12rem; max-height: 15rem; margin: auto 10px auto 10px;`;
+                img.style.cssText = `max-width: 12rem; max-height: 12rem; margin: auto 10px auto 10px;`;
                 img.setAttribute('src', `insertCover/${product.cover.path}`);
 
                 cart.insertAdjacentElement('beforeEnd', img);
@@ -625,38 +626,38 @@ class PrintProductModule {
                             </div>
                             
                             <div class="mt-1 mb-1 spec-1 d-flex flex-column">
-                            <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
-                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
-                                </svg>
-                                Процессор: ${product.cpuType} ${product.cpuModel} ${product.cpuFrequency}</span>
                                 <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
-                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
-                                </svg>
-                                Видеокарта: ${product.gpuType} ${product.gpuModel}
-                            </span>
-                                <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
-                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
-                                </svg>
-                                ОЗУ: ${product.ramSize}, ${product.ramType}, ${product.ramClockSpeed}
-                            </span>
-                                <span>
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                                     class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
-                                  <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
-                                </svg>
-                                Аккумулятор: ${product.batteryTechnology}, время работы: ${product.batteryLife} часов
-                            </span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                      <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                    </svg>
+                                    Процессор: ${product.cpuType} ${product.cpuModel} ${product.cpuFrequency}</span>
+                                    <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                      <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                    </svg>
+                                    Видеокарта: ${product.gpuType} ${product.gpuModel}
+                                </span>
+                                    <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                      <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                    </svg>
+                                    ОЗУ: ${product.ramSize}, ${product.ramType}, ${product.ramClockSpeed}
+                                </span>
+                                    <span>
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                         class="bi bi-dot" viewBox="0 0 16 16" style="fill: #007bff">
+                                      <path d="M8 9.5a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z"></path>
+                                    </svg>
+                                    Аккумулятор: ${product.batteryTechnology}, время работы: ${product.batteryLife} часов
+                                </span>
                             </div>
 
                             <a data-bs-target="#exampleModal" data-bs-toggle="modal"
                                     id="viewDetailButton" style="color: blue; cursor: pointer;">
-                                Смотреть
+                                Смотреть подробней
                             </a>
                         </div>
                             
@@ -767,43 +768,46 @@ class PrintProductModule {
                 divButtons.classList.add("w-25", "flex-wrap", "justify-content-between");
                 divButtons.style = "margin-top: -6px; font-size: 17px";
 
-                let productPrice = document.createElement("p");
+                let productPrice = document.createElement("h4");
                 productPrice.classList.add("card-text", "mt-2");
                 productPrice.style = "white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 12rem; margin-bottom: 0";
-                productPrice.appendChild(document.createTextNode("Цена: "));
-                let productPriceStrong = document.createElement("strong");
-                productPriceStrong.appendChild(document.createTextNode(product.price + "€"));
-                productPrice.appendChild(productPriceStrong);
+                productPrice.appendChild(document.createTextNode(product.price + "€"));
+
+                let deliveryPrice = document.createElement("h6");
+                deliveryPrice.classList.add("text-success");
+                deliveryPrice.classList.add("card-text", "mt-2");
+                deliveryPrice.appendChild(document.createTextNode("Доставка - 5€"))
 
                 let productInStock = document.createElement("p");
                 productInStock.classList.add("card-text", "mb-0", "mt-2");
-                productInStock.appendChild(document.createTextNode("Наличие: "));
                 let productInStockStrong = document.createElement("strong");
                 productInStockStrong.innerHTML = inStock;
                 productInStock.appendChild(productInStockStrong);
 
-                let hr = document.createElement("hr");
-                hr.classList.add("mb-3", "mt-2");
-
                 let addToBagSpan = document.createElement("span");
-                addToBagSpan.classList.add("btn", "btn-primary", "w-100");
+                addToBagSpan.classList.add("btn", "btn-outline-primary", "w-100", "mt-2");
                 addToBagSpan.appendChild(document.createTextNode("Добавить в корзину"));
                 addToBagSpan.onclick = function () {
                     productModule.addProductToBag(product.id);
                 };
 
                 let buyProductSpan = document.createElement("span");
-                buyProductSpan.classList.add("btn", "btn-outline-primary", "w-100", "mt-3");
+                buyProductSpan.classList.add("btn", "btn-primary", "w-100", "mt-2");
                 buyProductSpan.appendChild(document.createTextNode("Купить сразу"));
                 buyProductSpan.onclick = function () {
                     productModule.buyProduct(product.id);
                 };
 
+                if (product.count === 0) {
+                    addToBagSpan.disabled = true;
+                    buyProductSpan.disabled = true;
+                }
+
                 divButtons.appendChild(productPrice);
+                divButtons.appendChild(deliveryPrice);
                 divButtons.appendChild(productInStock);
-                divButtons.appendChild(hr);
-                divButtons.appendChild(addToBagSpan);
                 divButtons.appendChild(buyProductSpan);
+                divButtons.appendChild(addToBagSpan);
 
                 cart.appendChild(divButtons)
 

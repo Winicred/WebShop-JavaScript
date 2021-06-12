@@ -65,7 +65,6 @@ document.getElementById("adminPanel").onclick = function () {
     printAdminModule.printAdminPanel();
 };
 
-//
 document.getElementById("buyerProfile").onclick = function () {
     document.getElementById("info").innerHTML = "";
     printBuyerModule.printBuyerProfile();

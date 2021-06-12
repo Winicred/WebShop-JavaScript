@@ -1,5 +1,6 @@
 import {printAdminModule} from "./prints/PrintAdminModule.js";
 import {printProductModule} from "./prints/PrintProductModule.js";
+import {authModule} from "./AuthModule.js";
 
 class AdminModule {
     async loadListUsers() {
@@ -28,8 +29,8 @@ class AdminModule {
         if (response.ok) {
             const result = await response.json();
             document.getElementById("content").innerHTML = "";
-            document.getElementById("info").innerHTML = result.info;
             sessionStorage.setItem("user", result.user);
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -52,8 +53,7 @@ class AdminModule {
         if (response.ok) {
             const result = await response.json();
             document.getElementById("content").innerHTML = "";
-            document.getElementById("info").innerHTML = result.info;
-            console.log(result);
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -98,8 +98,8 @@ class AdminModule {
         if (response.ok) {
             const result = await response.json();
             document.getElementById("content").innerHTML = "";
-            document.getElementById("info").innerHTML = result.info;
             await printAdminModule.printListUsers();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -122,8 +122,8 @@ class AdminModule {
         if (response.ok) {
             const result = await response.json();
             document.getElementById("content").innerHTML = "";
-            document.getElementById("info").innerHTML = result.info;
             await printProductModule.printDiscountForm();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -142,8 +142,8 @@ class AdminModule {
         if (response.ok) {
             const result = await response.json();
             document.getElementById("content").innerHTML = "";
-            document.getElementById("info").innerHTML = result.info;
             await printProductModule.printDiscountForm();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }

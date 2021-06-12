@@ -1,5 +1,6 @@
 import {printProductModule} from "./prints/PrintProductModule.js";
 import {printBuyerModule} from "./prints/printBuyerModule.js";
+import {authModule} from "./AuthModule.js";
 
 class ProductModule {
     async addProduct() {
@@ -10,10 +11,8 @@ class ProductModule {
 
         if (response.ok) {
             const result = await response.json();
-            document.getElementById("info").innerHTML = result.info;
-            console.log("Request status: " + result.requestStatus);
-            console.log("Info: " + result.info);
             await printProductModule.printListProducts();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -29,10 +28,8 @@ class ProductModule {
 
         if (response.ok) {
             const result = await response.json();
-            document.getElementById("info").innerHTML = result.info;
-            console.log("Request status: " + result.requestStatus);
-            console.log("Info: " + result.info);
             await printProductModule.printAddProduct();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -46,9 +43,8 @@ class ProductModule {
 
         if (response.ok) {
             const result = await response.json();
-            document.getElementById("info").innerHTML = result.info;
-            console.log("Request status: " + result.requestStatus);
             await printProductModule.printAddProduct();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -199,9 +195,11 @@ class ProductModule {
 
         if (response.ok) {
             const result = await response.json();
-            await printProductModule.printListProducts();
-            document.getElementById("content").innerHTML = "";
-            document.getElementById("info").innerHTML = result.info;
+            sessionStorage.setItem("buyer", JSON.stringify(result.buyer));
+            sessionStorage.setItem("buyerBalance", JSON.stringify(result.buyerBalance));
+
+            authModule.popUpMessage(result.info);
+            authModule.toggleMenu();
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -225,7 +223,9 @@ class ProductModule {
             cartList.push(result.product);
 
             sessionStorage.setItem("cartList", JSON.stringify(cartList));
-            document.getElementById("info").innerHTML = result.info;
+
+            authModule.popUpMessage(result.info);
+            authModule.toggleMenu();
         } else {
             console.log("INFO: Ошибка сервера.");
         }
@@ -233,8 +233,6 @@ class ProductModule {
 
     async deleteProductFromCart(index) {
         let cartList = JSON.parse(sessionStorage.getItem("cartList"));
-
-        console.log(index)
 
         let data = {
             "index": index
@@ -251,8 +249,8 @@ class ProductModule {
             cartList.splice(index - 1, 1);
 
             sessionStorage.setItem("cartList", JSON.stringify(cartList));
-            document.getElementById("info").innerHTML = result.info;
             await printBuyerModule.printCartList();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
             return null;
@@ -299,7 +297,7 @@ class ProductModule {
     }
 
     async usePromoCode() {
-        let promoCodeName = document.getElementById("promoCodeName").value;
+        let promoCodeName = document.getElementById("promoCodeNameInput").value;
 
         let data = {
             "promoCodeName": promoCodeName
@@ -313,12 +311,35 @@ class ProductModule {
         if (response.ok) {
             let result = await response.json();
 
-            sessionStorage.setItem("promoCodeName", result.promoCodeName);
-            sessionStorage.setItem("promoCodeUsed", result.promoCodeUsed);
-
-            document.getElementById("info").innerHTML = result.info;
+            sessionStorage.setItem("promoCodeName", JSON.stringify(result.promoCodeName));
+            sessionStorage.setItem("promoCodeUsed", JSON.stringify(result.promoCodeUsed));
+            sessionStorage.setItem("promoCode", JSON.stringify(result.promoCode));
 
             await printBuyerModule.printCartList();
+            authModule.popUpMessage(result.info);
+        } else {
+            console.log("INFO: Ошибка сервера.");
+            return null;
+        }
+    }
+
+    async payment(totalPrice) {
+        let data = {
+            "totalPrice": totalPrice
+        };
+
+        console.log(totalPrice)
+
+        let response = await fetch("paymentJSON", {
+            method: "POST",
+            body: JSON.stringify(data)
+        });
+
+        if (response.ok) {
+            let result = await response.json();
+
+            await printProductModule.printListProducts();
+            authModule.popUpMessage(result.info);
         } else {
             console.log("INFO: Ошибка сервера.");
             return null;

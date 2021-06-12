@@ -3,6 +3,7 @@ package JSONServlets;
 import JSONBuilder.JSONBuyerBuilder;
 import JSONBuilder.JSONProductBuilder;
 import JSONBuilder.JSONPromoCodeBuilder;
+import JSONBuilder.JSONUserBuilder;
 import entity.*;
 import jakarta.ejb.EJB;
 import jakarta.json.*;
@@ -27,6 +28,7 @@ import java.util.*;
         "/editBuyerProfileJSON",
         "/loadApproxDateJSON",
         "/usePromoCodeJSON",
+        "/paymentJSON",
 })
 
 public class BuyerServletJSON extends HttpServlet {
@@ -57,6 +59,11 @@ public class BuyerServletJSON extends HttpServlet {
         HttpSession httpSession = request.getSession(true);
         User user = (User) httpSession.getAttribute("user");
 
+        String promoCodeName = (String) httpSession.getAttribute("promoCodeInput");
+        PromoCode promoCode = promoCodeFacade.findPromoCodeName(promoCodeName);
+        boolean isPromoCodeUsed = (boolean) httpSession.getAttribute("promoCodeUsed");
+
+
         @SuppressWarnings("unchecked")
         List<Product> cartList = (List<Product>) httpSession.getAttribute("cartList");
 
@@ -77,19 +84,21 @@ public class BuyerServletJSON extends HttpServlet {
                         buyerFacade.edit(buyer);
                         History history = new History("Оплачен", product, buyer, new GregorianCalendar().getTime());
                         historyFacade.create(history);
-                        json = job.add("requestStatus", "false")
-                                .add("info", "Товар " + '"' + product.getBrand() + " " + product.getSeries() + " " + product.getModel() + '"' + "куплен пользователем: " + '"' + buyer.getName() + " " + buyer.getLastname() + '"' + ".")
-                                .build()
-                                .toString();
                     } else {
+                        History history = new History("Забронирован", product, buyer, new GregorianCalendar().getTime());
+                        historyFacade.create(history);
                         json = job.add("requestStatus", "false")
                                 .add("info", "Недостаточно средств на балансе.")
                                 .build()
                                 .toString();
-                        History history = new History("Забронирован", product, buyer, new GregorianCalendar().getTime());
-                        historyFacade.create(history);
+                        break;
                     }
-
+                    json = job.add("requestStatus", "false")
+                            .add("info", "Товар " + '"' + product.getBrand() + " " + product.getSeries() + " " + product.getModel() + '"' + "куплен пользователем: " + '"' + buyer.getName() + " " + buyer.getLastname() + '"' + ".")
+                            .add("buyer", new JSONBuyerBuilder().createJSONBuyer(buyer))
+                            .add("buyerBalance", buyer.getMoney())
+                            .build()
+                            .toString();
                     break;
                 }
 
@@ -115,6 +124,11 @@ public class BuyerServletJSON extends HttpServlet {
 
                 cartList.add(0, product);
 
+                if (isPromoCodeUsed) {
+                    promoCode = promoCodeFacade.findPromoCodeName(promoCodeName);
+                    job.add("promoCode", new JSONPromoCodeBuilder().createJSONPromoCode(promoCode));
+                }
+
                 httpSession.setAttribute("cartList", cartList);
 
                 json = job.add("requestStatus", true)
@@ -135,6 +149,7 @@ public class BuyerServletJSON extends HttpServlet {
                 httpSession.setAttribute("cartList", cartList);
 
                 json = job.add("requestStatus", true)
+                        .add("info", "Товар " + '"' + product.getBrand() + " " + product.getModel() + " " + product.getSeries() + '"' + " удалён.")
                         .add("product", new JSONProductBuilder().createJSONProduct(product))
                         .build()
                         .toString();
@@ -207,6 +222,13 @@ public class BuyerServletJSON extends HttpServlet {
                 break;
 
             case "/loadApproxDateJSON":
+                boolean promoCodeUsed = (boolean) httpSession.getAttribute("promoCodeUsed");
+
+                if (promoCodeUsed) {
+                    promoCode = (PromoCode) httpSession.getAttribute("promoCode");
+                    job.add("promoCode", new JSONPromoCodeBuilder().createJSONPromoCode(promoCode));
+                }
+
                 DateFormatSymbols sym = DateFormatSymbols.getInstance(new Locale("ru", "ru"));
                 sym.setMonths(new String[]{"Января", "Февраля", "Марта", "Апреля", "Мая", "Июня", "Июля", "Августа", "Сентября", "Октября", "Ноября", "Декабря"});
                 SimpleDateFormat sdf = new SimpleDateFormat("dd MMMM yyyy");
@@ -228,12 +250,12 @@ public class BuyerServletJSON extends HttpServlet {
             case "/usePromoCodeJSON":
                 jsonObject = jsonReader.readObject();
 
-                String promoCodeName = jsonObject.getString("promoCodeName");
+                String promoCodeNameInput = jsonObject.getString("promoCodeName");
 
-                PromoCode usedPromoCode = promoCodeFacade.findPromoCodeName(promoCodeName);
+                PromoCode usedPromoCode = promoCodeFacade.findPromoCodeName(promoCodeNameInput);
                 try {
-                    if (promoCodeName.equals(usedPromoCode.getPromoCodeName())) {
-                        httpSession.setAttribute("promoCode", usedPromoCode);
+                    if (promoCodeNameInput.equals(usedPromoCode.getPromoCodeName())) {
+                        httpSession.setAttribute("promoCode", promoCodeNameInput);
                         httpSession.setAttribute("promoCodeUsed", true);
                     }
                 } catch (NullPointerException e) {
@@ -244,14 +266,54 @@ public class BuyerServletJSON extends HttpServlet {
                     break;
                 }
 
+                httpSession.setAttribute("promoCodeName", promoCodeNameInput);
+                httpSession.setAttribute("promoCode", usedPromoCode);
+
                 json = job.add("requestStatus", true)
                         .add("info", "Вы успешно применили промо-код!")
                         .add("promoCode", new JSONPromoCodeBuilder().createJSONPromoCode(usedPromoCode))
                         .add("promoCodeUsed", true)
-                        .add("promoCodeName", promoCodeName)
+                        .add("promoCodeName", usedPromoCode.getPromoCodeName())
                         .build()
                         .toString();
                 break;
+
+            case "/paymentJSON":
+                jsonObject = jsonReader.readObject();
+
+                double totalPrice = jsonObject.getInt("totalPrice");
+
+                buyer = buyerFacade.find(user.getBuyer().getId());
+                user = userFacade.find(user.getId());
+
+                double userMoney = user.getBuyer().getMoney();
+                List<Product> productList = new ArrayList<>();
+                for (Product value : cartList) {
+                    product = value;
+                    productList.add(product);
+                }
+
+                if (userMoney < totalPrice) {
+//                    request.setAttribute("info", "Недостаточно денег для покупки");
+//                    request.getRequestDispatcher("/listProducts").forward(request, response);
+                    break;
+                }
+
+                for (Product buyProduct : productList) {
+                    historyFacade.create(new History("success", buyProduct, user.getBuyer(), new GregorianCalendar().getTime()));
+                    cartList.clear();
+                }
+
+                buyer.setMoney(buyer.getMoney() - totalPrice);
+                buyerFacade.edit(buyer);
+
+                user = userFacade.find(user.getId());
+                userFacade.edit(user);
+
+                json = job.add("requestStatus", true)
+                        .add("info", "Товары куплены")
+                        .build()
+                        .toString();
         }
 
         if ("".equals(json) || json == null) {
