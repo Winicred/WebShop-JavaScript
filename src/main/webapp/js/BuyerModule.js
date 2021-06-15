@@ -1,4 +1,4 @@
-import {printBuyerModule} from "./prints/printBuyerModule.js";
+import {printBuyerModule} from "./prints/PrintBuyerModule.js";
 import {authModule} from "./AuthModule.js";
 
 class BuyerModule {

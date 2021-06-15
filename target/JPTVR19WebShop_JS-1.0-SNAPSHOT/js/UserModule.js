@@ -3,27 +3,9 @@ import {authModule} from "./AuthModule.js";
 
 class UserModule {
     async registration() {
-        document.getElementById("info").innerHTML = "";
-        const name = document.getElementById("name").value;
-        const lastName = document.getElementById("lastName").value;
-        const email = document.getElementById("email").value;
-        const phoneNumber = document.getElementById("phoneNumber").value;
-        const login = document.getElementById("userLogin").value;
-        const password = document.getElementById("password").value;
-        const repeatPassword = document.getElementById("repeatPassword").value;
-        const user = {
-            "name": name,
-            "lastName": lastName,
-            "email": email,
-            "phoneNumber": phoneNumber,
-            "login": login,
-            "password": password,
-            "repeatPassword": repeatPassword,
-        }
-
         let response = await fetch("createUserJSON", {
-            method: 'POST',
-            body: JSON.stringify(user)
+            method: "POST",
+            body: new FormData(document.getElementById("registrationForm"))
         })
 
         if (response.ok) {
@@ -37,7 +19,7 @@ class UserModule {
 
     async loadListUsers() {
         let response = await fetch('listUsersJSON', {
-            method: 'GET',
+            method: "GET",
         })
         if (response.ok) {
             return await response.json();

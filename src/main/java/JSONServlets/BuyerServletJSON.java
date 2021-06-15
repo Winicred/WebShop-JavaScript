@@ -63,7 +63,6 @@ public class BuyerServletJSON extends HttpServlet {
         PromoCode promoCode = promoCodeFacade.findPromoCodeName(promoCodeName);
         boolean isPromoCodeUsed = (boolean) httpSession.getAttribute("promoCodeUsed");
 
-
         @SuppressWarnings("unchecked")
         List<Product> cartList = (List<Product>) httpSession.getAttribute("cartList");
 

@@ -3,7 +3,7 @@ import {printAdminModule} from "./prints/PrintAdminModule.js";
 import {authModule} from "./AuthModule.js";
 import {printUserModule} from "./prints/PrintUserModule.js";
 import {printAuthModule} from "./prints/PrintAuthModule.js";
-import {printBuyerModule} from "./prints/printBuyerModule.js";
+import {printBuyerModule} from "./prints/PrintBuyerModule.js";
 
 document.getElementById("addProduct").onclick = function () {
     document.getElementById("info").innerHTML = "";

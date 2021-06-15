@@ -1,7 +1,7 @@
 import {printProductModule} from "./prints/PrintProductModule.js";
 
 class AuthModule {
-    async login() {
+    async loginIn() {
         let cartList = [];
         document.getElementById("info").innerHTML = "";
 
@@ -47,12 +47,11 @@ class AuthModule {
                     sessionStorage.removeItem("promoCode");
                 }
             }
-
             this.popUpMessage(result.info);
+            this.toggleMenu();
         } else {
             console.log("Ошибка получения данных");
         }
-        this.toggleMenu();
     }
 
     async logout() {
@@ -154,29 +153,32 @@ class AuthModule {
                 break;
         }
 
-        document.getElementById("loginedUserAs").innerHTML = user.login;
-        document.getElementById("loginedBuyerId").innerHTML = "ID: " + buyer.id;
+        if (user !== null) {
+            document.getElementById("userAvatar").src = `insertAvatar/${buyer.avatar.path}`;
 
-        let cartList = JSON.parse(sessionStorage.getItem("cartList"));
+            document.getElementById("loginedUserAs").innerHTML = user.login;
+            document.getElementById("loginedBuyerId").innerHTML = "ID: " + buyer.id;
 
-        let buyerBalance = JSON.parse(sessionStorage.getItem("buyerBalance"))
+            let cartList = JSON.parse(sessionStorage.getItem("cartList"));
 
-        let userBalance = document.getElementById("userBalance");
-        if (buyer.money === "null") {
-            userBalance.innerHTML = 0 + "€";
-        } else {
-            userBalance.innerHTML = (Math.trunc(buyerBalance * 100) / 100) + "€";
-        }
+            let buyerBalance = JSON.parse(sessionStorage.getItem("buyerBalance"))
 
-        if (cartList.length !== 0) {
-            document.getElementById("myCartList").innerHTML =
-                `
+            let userBalance = document.getElementById("userBalance");
+            if (buyer.money === "null") {
+                userBalance.innerHTML = 0 + "€";
+            } else {
+                userBalance.innerHTML = (Math.trunc(buyerBalance * 100) / 100) + "€";
+            }
+
+            if (cartList.length !== 0) {
+                document.getElementById("myCartList").innerHTML =
+                    `
                 Моя корзина
                 <span class="badge rounded-pill bg-secondary my-auto" style="padding: 4px 8px">${cartList.length}</span>
                 `;
-        } else {
-            document.getElementById("myCartList").innerHTML =
-                `
+            } else {
+                document.getElementById("myCartList").innerHTML =
+                    `
                 Моя корзина
                  <svg
                     xmlns="http://www.w3.org/2000/svg" width="16" height="16"
@@ -185,6 +187,7 @@ class AuthModule {
                     <path d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4zm-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2zm7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2z"></path>
                 </svg>
                 `;
+            }
         }
     }
 

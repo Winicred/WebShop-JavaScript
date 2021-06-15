@@ -33,7 +33,7 @@ class PrintAuthModule {
 
         document.getElementById("loginForm").onsubmit = function (e) {
             e.preventDefault();
-            authModule.login();
+            authModule.loginIn();
         }
         document
             .getElementById("registration")

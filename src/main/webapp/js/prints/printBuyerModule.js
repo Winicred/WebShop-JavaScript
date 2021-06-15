@@ -16,7 +16,7 @@ class PrintBuyerModule {
                                 <div class="card">
                                     <div class="card-body">
                                         <div class="d-flex flex-column align-items-center text-center">
-                                                <img src="" alt="" class="rounded-circle"
+                                                <img src="" alt="" id="buyerAvatar"
                                                      width="150" height="150">
                                             <div class="mt-3">
                                                 <h4>
@@ -265,6 +265,8 @@ class PrintBuyerModule {
                 </div>
             </div>
             `;
+
+        document.getElementById("buyerAvatar").src = `insertAvatar/${buyer.avatar.path}`;
 
         // Header
         document.getElementById("profileUserLoginHeader").innerHTML = user.login;
