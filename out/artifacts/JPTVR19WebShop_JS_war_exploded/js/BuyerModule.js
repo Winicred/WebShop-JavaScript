@@ -1,5 +1,0 @@
-class BuyerModule {
-    printListProducts() {
-
-    }
-}
